@@ -21,10 +21,22 @@ def get_tasks():
     tasks = Task.query.order_by('id').all()
     return {'tasks': [task.format() for task in tasks]}
 
+@app.route('/tasks/<task_id>')
+def get_task(task_id):
+    task = Task.query.get(task_id)
+    return task.format()
+
 # Volunteers routes -------------------------------------------------------
 @app.route('/volunteers')
 def get_volunteers():
     volunteers = Volunteer.query.order_by('name').all()
     return {'volunteers': [vol.format() for vol in volunteers]}
+
+@app.route('/volunteers/<vol_id>')
+def get_volunteer(vol_id):
+    volunteer = Volunteer.query.get(vol_id)
+    return volunteer.format()
+
+
 
 
