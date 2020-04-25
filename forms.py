@@ -16,6 +16,20 @@ class TaskForm(Form):
         'Date Needed', validators=[DataRequired()]
     )
 
+    status = SelectField(
+        'Status',
+        choices=[
+            ('Open', 'Open'),
+            ('Filled', 'Filled'),
+            ('Complete', 'Complete'),
+        ]
+    )
+
+    volunteer = SelectField(
+        'Assign Volunteer',
+        coerce=int
+    )
+
 
 class VolunteerForm(Form):
     name = StringField(
