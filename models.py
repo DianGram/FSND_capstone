@@ -35,7 +35,7 @@ class Task(db.Model):
     title = db.Column(db.String, nullable=False)
     details = db.Column(db.String, nullable=False)
     date_needed = db.Column(db.Date, nullable=False)
-    status = db.Column(db.String, nullable=False)
+    status = db.Column(db.String, nullable=False, default='Open')
     volunteer_id = db.Column(db.Integer, db.ForeignKey('volunteer.id'))
     volunteers = db.relationship('Volunteer',
                                  backref=db.backref(
@@ -43,14 +43,17 @@ class Task(db.Model):
                                      cascade='all, delete')
     )
 
-    def __init__(self, title, details, date_needed):
+    def __init__(self, title, details, date_needed, status=None):
         self.title = title
         self.details = details
         self.date_needed = date_needed
-        self.status = 'Open'
-        self.volunteer_id = -1
+        self.status = status
+        self.volunteer_id = None
 
     def format(self):
+        vol_name = ''
+        if self.volunteers:
+            vol_name = self.volunteers.name
         return {
             'id': self.id,
             'title': self.title,
@@ -58,8 +61,19 @@ class Task(db.Model):
             'date_needed': self.date_needed,
             'status': self.status,
             'volunteer_id': self.volunteer_id,
-            'volunteer_name': self.volunteers.name
+            'volunteer_name': vol_name
         }
+
+    def insert(self):
+        db.session.add(self)
+        db.session.commit()
+
+    def update(self):
+        db.session.commit()
+
+    def delete(self):
+        db.session.delete(self)
+        db.session.commit()
 
 
 '''
@@ -104,3 +118,14 @@ class Volunteer(db.Model):
             'phone_number': self.phone_number,
             'tasks': [task.format() for task in task_list]
         }
+
+    def insert(self):
+        db.session.add(self)
+        db.session.commit()
+
+    def update(self):
+        db.session.commit()
+
+    def delete(self):
+        db.session.delete(self)
+        db.session.commit()
