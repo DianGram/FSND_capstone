@@ -1,19 +1,16 @@
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
+from datetime import datetime
 import os
 import json
 
+
 database_path = os.environ['DATABASE_URL']
-
 db = SQLAlchemy()
-
-'''
-setup_db(app)
-    binds a flask application and a SQLAlchemy service
-'''
 
 
 def setup_db(app, db_path=database_path):
+    #  binds a flask application and an SQLAlchemy service
     app.config["SQLALCHEMY_DATABASE_URI"] = db_path
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     db.app = app
@@ -58,7 +55,7 @@ class Task(db.Model):
             'id': self.id,
             'title': self.title,
             'details': self.details,
-            'date_needed': self.date_needed,
+            'date_needed': datetime.strftime(self.date_needed, '%Y-%m-%d'),
             'status': self.status,
             'volunteer_id': self.volunteer_id,
             'volunteer_name': vol_name
