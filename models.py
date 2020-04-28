@@ -112,6 +112,7 @@ class Volunteer(db.Model):
             'address': self.address,
             'city': self.city,
             'state': self.state,
+            'zip_code': self.zip_code,
             'phone_number': self.phone_number,
             'tasks': [task.format() for task in task_list]
         }

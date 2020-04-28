@@ -63,7 +63,7 @@ def create_app():
         try:
             task.update()
         except Exception:
-            print('Error', sys.exc_info())
+            print('422 Error', sys.exc_info())
             abort(422)
 
         return {
@@ -81,7 +81,7 @@ def create_app():
         try:
             task.delete()
         except Exception:
-            print('Error', sys.exc_info())
+            print('422 Error', sys.exc_info())
             abort(422)
 
         return {
@@ -93,20 +93,14 @@ def create_app():
     def create_task():
         # creates a new task and returns it
         body = request.get_json()
-        print('body', body)
         if not body:
             abort(400)
 
         title = body.get('title', None)
         details = body.get('details', None)
         date_needed = body.get('date_needed', None)
-        print('in create task, date_needed:', date_needed)
         status = body.get('status', 'Open')
-        # volunteer_id = body.get('volunteer_id', None)
         if title and details and date_needed:
-            print('title:', title)
-            print('details:', details)
-            print('date_needed', date_needed)
             try:
                 new_task = Task(title, details, date_needed, status)
                 new_task.insert()
@@ -114,11 +108,10 @@ def create_app():
                         'task': new_task.format()
                         }
             except Exception:
-                print('422 Error')
-                print(sys.exc_info())
+                print('422 Error', sys.exc_info())
                 abort(422)
         else:
-            print('400 Error')
+            # request did not contain one or more required fields
             abort(400)
 
     # Volunteers routes -------------------------------------------------------
@@ -134,6 +127,8 @@ def create_app():
     def get_volunteer(vol_id):
         # returns the volunteer whose id = vol_id
         volunteer = Volunteer.query.get(vol_id)
+        if not volunteer:
+            abort(404)
         return {
             'success': True,
             'volunteer': volunteer.format()
@@ -161,7 +156,6 @@ def create_app():
         try:
             volunteer.update()
         except Exception:
-            print('Error', sys.exc_info())
             abort(422)
 
         return {
@@ -179,7 +173,6 @@ def create_app():
         try:
             volunteer.delete()
         except Exception:
-            print('Error', sys.exc_info())
             abort(422)
 
         return {
@@ -191,7 +184,6 @@ def create_app():
     def create_volunteer():
         # creates a new volunteer and returns it
         body = request.get_json()
-        print('body', body)
         if not body:
             abort(400)
 
@@ -211,10 +203,9 @@ def create_app():
                     'volunteer': new_volunteer.format()
                 }
             except Exception:
-                print('Error')
-                print(sys.exc_info())
                 abort(422)
         else:
+            # request did not contain one or more required fields
             abort(400)
 
     # Error Handlers ----------------------------------------------------------
