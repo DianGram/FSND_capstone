@@ -11,7 +11,7 @@ API_AUDIENCE = os.environ.get('API_AUDIENCE')
 
 print("AUTH0_DOMAIN", AUTH0_DOMAIN)
 print("ALGORITHMS", ALGORITHMS)
-print("AUDIENCE", AUDIENCE)
+print("AUDIENCE", API_AUDIENCE)
 
 ''' 
 AuthError Exception
