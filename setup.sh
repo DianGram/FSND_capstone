@@ -5,7 +5,6 @@ ALGORITHMS=['RS256']
 API_AUDIENCE="Feed the Kids"
 FLASK_APP=app
 FLASK_ENV=development
-API_AUDIENCE="Feed the Kids"
 
 
 export FLASK_APP
