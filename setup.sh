@@ -1,6 +1,16 @@
-database_url=postgresql://leegramling@localhost:5432/capstone
-
 source udacity_env/bin/activate
-export DATABASE_URL=$database_url
-export FLASK_APP=app
-export FLASK_ENV=development
+
+AUTH0_DOMAIN="fsnd-coffeeshop.auth0.com"
+ALGORITHMS=['RS256']
+API_AUDIENCE="Feed the Kids"
+FLASK_APP=app
+FLASK_ENV=development
+API_AUDIENCE="Feed the Kids"
+
+
+export FLASK_APP
+export FLASK_ENV
+
+export AUTH0_DOMAIN
+export ALGORITHMS
+export API_AUDIENCE

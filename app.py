@@ -1,16 +1,13 @@
 import sys
 from flask import Flask, request, abort, jsonify
-from flask_sqlalchemy import SQLAlchemy
-from flask_cors import CORS
 from models import Task, Volunteer, setup_db
-from auth import AuthError
+from auth import AuthError, requires_auth
 
 
 def create_app():
     # create the app
     app = Flask(__name__)
     setup_db(app)
-    CORS(app)
 
     # Routes
     # Index route
@@ -42,7 +39,8 @@ def create_app():
         }
 
     @app.route('/tasks/<int:task_id>', methods=['PATCH'])
-    def update_task(task_id):
+    @requires_auth('patch:task')
+    def update_task(token, task_id):
         # updates the task having id = task_id and returns the updated task
         task = Task.query.get(task_id)
         if not task:
@@ -72,7 +70,8 @@ def create_app():
         }
 
     @app.route('/tasks/<int:task_id>', methods=['DELETE'])
-    def delete_task(task_id):
+    @requires_auth('delete:task')
+    def delete_task(token, task_id):
         # deletes the task having id = task_id and returns the task id
         task = Task.query.get(task_id)
         if not task:
@@ -90,7 +89,8 @@ def create_app():
         }
 
     @app.route('/tasks/create', methods=['POST'])
-    def create_task():
+    @requires_auth('post:task')
+    def create_task(token):
         # creates a new task and returns it
         body = request.get_json()
         if not body:
@@ -116,7 +116,8 @@ def create_app():
 
     # Volunteers routes -------------------------------------------------------
     @app.route('/volunteers')
-    def get_volunteers():
+    @requires_auth('get:volunteer')
+    def get_volunteers(token):
         # returns all volunteers
         volunteers = Volunteer.query.order_by('name').all()
         return {'success': True,
@@ -124,7 +125,8 @@ def create_app():
                 }
 
     @app.route('/volunteers/<int:vol_id>')
-    def get_volunteer(vol_id):
+    @requires_auth('get:volunteer')
+    def get_volunteer(token, vol_id):
         # returns the volunteer whose id = vol_id
         volunteer = Volunteer.query.get(vol_id)
         if not volunteer:
@@ -135,7 +137,8 @@ def create_app():
         }
 
     @app.route('/volunteers/<int:vol_id>', methods=['PATCH'])
-    def update_volunteer(vol_id):
+    @requires_auth('patch:volunteer')
+    def update_volunteer(token, vol_id):
         # updates the volunteer having id = vol_id and returns the updated
         # volunteer
         volunteer = Volunteer.query.get(vol_id)
@@ -164,7 +167,8 @@ def create_app():
         }
 
     @app.route('/volunteers/<int:vol_id>', methods=['DELETE'])
-    def delete_volunteer(vol_id):
+    @requires_auth('delete:volunteer')
+    def delete_volunteer(token, vol_id):
         # deletes the volunteer having id = vol_id and returns the vol_id
         volunteer = Volunteer.query.get(vol_id)
         if not volunteer:
@@ -181,7 +185,8 @@ def create_app():
         }
 
     @app.route('/volunteers/create', methods=['POST'])
-    def create_volunteer():
+    @requires_auth('post:volunteer')
+    def create_volunteer(token):
         # creates a new volunteer and returns it
         body = request.get_json()
         if not body:

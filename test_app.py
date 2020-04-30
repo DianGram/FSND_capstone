@@ -3,8 +3,6 @@ import json
 from app import create_app
 from models import Volunteer
 
-# https://{{YOUR_DOMAIN}}/authorize?audience={{API_IDENTIFIER}}&response_type=token&client_id={{YOUR_CLIENT_ID}}&redirect_uri={{YOUR_CALLBACK_URI}}
-
 
 class CapstoneTestCase(unittest.TestCase):
     """ This class represents the test cases for the Capstone app """
