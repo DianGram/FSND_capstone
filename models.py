@@ -16,6 +16,7 @@ def setup_db(app, db_path=database_path):
     db.app = app
     db.init_app(app)
     migrate = Migrate(app, db)
+    print('db path:', db_path)
 
 
 '''
