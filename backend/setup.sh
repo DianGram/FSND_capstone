@@ -1,4 +1,4 @@
-source udacity_env/bin/activate
+source /bin/activate
 
 DATABASE_URL="postgresql://leegramling@localhost:5432/capstone"
 AUTH0_DOMAIN="fsnd-coffeeshop.auth0.com"
