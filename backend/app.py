@@ -1,7 +1,7 @@
 import sys
 from flask import Flask, request, abort, jsonify
-from .models import Task, Volunteer, setup_db
-from .auth import AuthError, requires_auth
+from models import Task, Volunteer, setup_db
+from auth import AuthError, requires_auth
 
 def create_app():
     # create the app

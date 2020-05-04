@@ -1,8 +1,8 @@
 import os
 import unittest
 import json
-from .app import create_app
-from .models import Volunteer
+from app import create_app
+from models import Volunteer
 
 
 class CapstoneTestCase(unittest.TestCase):
