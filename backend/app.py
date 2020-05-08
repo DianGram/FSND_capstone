@@ -1,18 +1,88 @@
 import sys
-from flask import Flask, request, abort, jsonify
+import os
+import requests
+import json
+import http.client
+from flask import Flask, request, abort, jsonify, render_template, session, redirect
 from models import Task, Volunteer, setup_db
-from auth import AuthError, requires_auth
+from auth import AuthError, requires_auth, requires_auth0
+from authlib.integrations.flask_client import OAuth
 
 def create_app():
     # create the app
-    app = Flask(__name__)
+    static_folder = os.path.abspath('../frontend/static')
+    app = Flask(__name__, template_folder='../frontend/templates', static_folder=static_folder)
     setup_db(app)
+
+    auth0_domain = os.environ.get('AUTH0_DOMAIN')
+    algorithms = os.environ.get('ALGORITHMS')
+    audience = os.environ.get('API_AUDIENCE')
+    client_id = os.environ.get('CLIENT_ID')
+    client_secret = os.environ.get('CLIENT_SECRET')
+    redirect_url = os.environ.get('REDIRECT_URL')
+
+    app.secret_key = client_secret
+
+    oauth = OAuth(app)
+    auth0 = oauth.register(
+        'auth0',
+        client_id=client_id,
+        client_secret=client_secret,
+        api_base_url=auth0_domain,
+        access_token_url=auth0_domain + '/oauth/token',
+        authorize_url=auth0_domain + '/authorize',
+        client_kwargs={
+            'scope': 'openid profile email',
+        },
+    )
 
     # Routes
     # Index route
     @app.route('/')
     def index():
-        return {'success': True}
+        print('index')
+        # return {'success': True}
+        return render_template('home.html')
+
+    # Login route
+    @app.route('/login')
+    def login():
+        print('/login')
+        print('auth0_domain', auth0_domain)
+        print('algorithms', algorithms)
+        print('audience', audience)
+        print('client_id', client_id)
+        print('client_secret', client_secret)
+        print('redirect_url', redirect_url)
+        response = auth0.authorize_redirect(redirect_uri=redirect_url, audience=audience)
+        print(type(response))
+        print('response location', response.location)
+        return response
+
+    @app.route('/callback')
+    def auth0_callback_handling():
+        print('/callback')
+        response = auth0.authorize_access_token()
+        token = response.get('access_token')
+        resp = auth0.get('userinfo')
+        userinfo = resp.json()
+
+        session['jwt_token'] = token
+        session['user'] = {
+            'user_id': userinfo['sub'],
+            'name': userinfo['name'],
+        }
+
+        return redirect('/dashboard')
+
+    @app.route('/dashboard')
+    @requires_auth0
+    def dashboard():
+        print('/dashboard')
+        return render_template('dashboard.html',
+                               userinfo=session['profile'],
+                               userinfo_pretty=json.dumps(session['jwt_payload']))
+
 
     # Tasks routes ------------------------------------------------------------
     @app.route('/tasks')
@@ -244,6 +314,14 @@ def create_app():
             "error": 422,
             "message": "Uprocessable"
         }), 422
+
+    @app.errorhandler(500)
+    def unprocessable(error):
+        return jsonify({
+            "success": False,
+            "error": 500,
+            "message": "Internal Server Error"
+        }), 500
 
     @app.errorhandler(AuthError)
     def auth_error(error):
