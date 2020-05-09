@@ -1,7 +1,7 @@
 source ../udacity_env/bin/activate
 
 DATABASE_URL="postgresql://leegramling@localhost:5432/capstone"
-AUTH0_DOMAIN="https://fsnd-coffeeshop.auth0.com"
+AUTH0_DOMAIN="fsnd-coffeeshop.auth0.com"
 ALGORITHMS=['RS256']
 API_AUDIENCE="Feed the Kids"
 CLIENT_ID="Ml4B4ziACg6qKMsifIL1C7Xit8mnxqfD"

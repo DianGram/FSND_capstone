@@ -1,4 +1,4 @@
-import os
+import os, sys
 import json
 from flask import request, redirect, session
 from functools import wraps
@@ -119,28 +119,28 @@ def verify_decode_jwt(token):
     }, 400)
 
 
-def requires_auth0(f):
-    @wraps(f)
-    def decorated(*args, **kwargs):
-        if 'profile' not in session:
-            print('profile not in session')
-            return redirect('/')
-        return f(*args, **kwargs)
-
-    return decorated
+# def requires_auth0(f):
+#     @wraps(f)
+#     def decorated(*args, **kwargs):
+#         if 'profile' not in session:
+#             print('profile not in session')
+#             return redirect('/')
+#         return f(*args, **kwargs)
+#
+#     return decorated
 
 def requires_auth(permission=''):
-    print('requires_auth:', permission)
     def requires_auth_decorator(f):
         @wraps(f)
         def wrapper(*args, **kwargs):
-            # if 'profile' not in session:
-            #     print('profile not in session')
-            #     return redirect('/')
-            token = get_token_auth_header()
+            token = session.get('jwt_token')
+            if not token:
+                print('getting token from auth header')
+                token = get_token_auth_header()
+            print('token', token)
             payload = verify_decode_jwt(token)
             check_permissions(permission, payload)
-            return f(payload, *args, **kwargs)
+            return f(*args, **kwargs)
 
         return wrapper
     return requires_auth_decorator

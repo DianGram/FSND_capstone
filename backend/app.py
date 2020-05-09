@@ -1,11 +1,9 @@
 import sys
 import os
-import requests
 import json
-import http.client
 from flask import Flask, request, abort, jsonify, render_template, session, redirect
 from models import Task, Volunteer, setup_db
-from auth import AuthError, requires_auth, requires_auth0
+from auth import AuthError, requires_auth
 from authlib.integrations.flask_client import OAuth
 
 def create_app():
@@ -15,7 +13,7 @@ def create_app():
     setup_db(app)
 
     auth0_domain = os.environ.get('AUTH0_DOMAIN')
-    algorithms = os.environ.get('ALGORITHMS')
+    auth0_base_url = 'https://' + auth0_domain
     audience = os.environ.get('API_AUDIENCE')
     client_id = os.environ.get('CLIENT_ID')
     client_secret = os.environ.get('CLIENT_SECRET')
@@ -28,13 +26,16 @@ def create_app():
         'auth0',
         client_id=client_id,
         client_secret=client_secret,
-        api_base_url=auth0_domain,
-        access_token_url=auth0_domain + '/oauth/token',
-        authorize_url=auth0_domain + '/authorize',
+        api_base_url=auth0_base_url,
+        access_token_url=auth0_base_url + '/oauth/token',
+        authorize_url=auth0_base_url + '/authorize',
         client_kwargs={
-            'scope': 'openid profile email',
+            # 'scope': 'openid',
         },
     )
+    print('api_base_url', auth0_base_url)
+    print('access_token_url', auth0_base_url + '/oauth/token')
+    print('authorize_url', auth0_base_url + '/authorize')
 
     # Routes
     # Index route
@@ -47,17 +48,13 @@ def create_app():
     # Login route
     @app.route('/login')
     def login():
-        print('/login')
-        print('auth0_domain', auth0_domain)
-        print('algorithms', algorithms)
-        print('audience', audience)
-        print('client_id', client_id)
-        print('client_secret', client_secret)
-        print('redirect_url', redirect_url)
-        response = auth0.authorize_redirect(redirect_uri=redirect_url, audience=audience)
-        print(type(response))
-        print('response location', response.location)
-        return response
+        # print('/login')
+        # print('auth0_domain', auth0_domain)
+        # print('algorithms', algorithms)
+        # print('audience', audience)
+        # print('client_id', client_id)
+        # print('redirect_url', redirect_url)
+        return auth0.authorize_redirect(redirect_uri=redirect_url, audience=audience)
 
     @app.route('/callback')
     def auth0_callback_handling():
@@ -68,20 +65,22 @@ def create_app():
         userinfo = resp.json()
 
         session['jwt_token'] = token
-        session['user'] = {
-            'user_id': userinfo['sub'],
-            'name': userinfo['name'],
-        }
+        # session['user'] = {
+        #     'user_id': userinfo['sub'],
+        #     'email': userinfo['name'],
+        #     'first_name': userinfo['nickname'],
+        # }
 
         return redirect('/dashboard')
 
     @app.route('/dashboard')
-    @requires_auth0
+    # @requires_auth('get:volunteer')
     def dashboard():
         print('/dashboard')
+
         return render_template('dashboard.html',
-                               userinfo=session['profile'],
-                               userinfo_pretty=json.dumps(session['jwt_payload']))
+                               # userinfo=session['user'],
+                               userinfo_pretty=session['jwt_token'])
 
 
     # Tasks routes ------------------------------------------------------------
@@ -186,9 +185,11 @@ def create_app():
     # Volunteers routes -------------------------------------------------------
     @app.route('/volunteers')
     @requires_auth('get:volunteer')
-    def get_volunteers(token):
+    def get_volunteers():
         # returns all volunteers
+        print('/volunteers')
         volunteers = Volunteer.query.order_by('name').all()
+        print('volunteer', volunteers[0])
         return {'success': True,
                 'volunteers': [vol.format() for vol in volunteers]
                 }
