@@ -1,0 +1,15 @@
+{% extends 'main.html' %}
+{% block title %}Fyyur{% endblock %}
+{% block content %}
+
+<br><br><br>
+<div class="container col-4">
+      <h3>Welcome {{userinfo['first_name']}}</h3>
+      Token <pre>{{userinfo_pretty}}</pre>
+      <a class="btn btn-info btn-lg btn-block" href="/volunteers">All Volunteers</a>
+      <a class="btn btn-info btn-lg btn-block" href="/volunteers/add">Add a New Volunteer</a>
+      <a class="btn btn-info btn-lg btn-block" href="/tasks">All Tasks</a>
+      <a class="btn btn-info btn-lg btn-block" href="/tasks/add">Add a New Task</a>
+</div>
+{% endblock %}
+

@@ -1,0 +1,18 @@
+{% extends 'main.html' %}
+{% block title %}Fyyur{% endblock %}
+{% block content %}
+
+<img src="{{ url_for('static', filename='Salad-bars-schools.jpg') }}" align="right" alt="picture of school kids eating a healthy lunch">
+<br><br><br>
+<div class="container-fluid">
+  Feed the Kids is an all-volunteer organization devoted to making sure that all of our children have enough to eat.
+  <br><br>
+  We need volunteers of all kinds!  Login today to help Feed the Kids!
+  <br><br>
+  Or if you just want to check out some of the things we need help with:
+  <br><br>
+  <a href="/tasks"><button class="btn btn-small btn-info" type="submit">Find Opportunities</button></a>
+
+</div>
+
+{% endblock %}

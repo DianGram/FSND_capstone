@@ -25,10 +25,10 @@ class TaskForm(Form):
         ]
     )
 
-    volunteer = SelectField(
-        'Assign Volunteer',
-        coerce=int
-    )
+    # volunteer = SelectField(
+    #     'Assign Volunteer',
+    #     coerce=int
+    # )
 
 
 class VolunteerForm(Form):

@@ -1,0 +1,39 @@
+{% extends 'main.html' %}
+{% block content %}
+
+<br><br><br>
+<div class="container col-5">
+  <div class="form-wrapper">
+    <form method="post" class="form">
+      <h3 class="form-heading">Add a New Volunteer</h3><br>
+      <div class="form-group">
+        <label for="name">Name</label>
+        {{ form.name(class_ = 'form-control', placeholder='Name', autofocus = true) }}
+      </div>
+      <div class="form-group">
+        <label for="address">Address</label>
+        {{ form.address(class_ = 'form-control', placeholder='Address', autofocus = true) }}
+      </div>
+      <div class="form-group">
+        <label for="city">City</label>
+        {{ form.city(class_ = 'form-control', placeholder='City', autofocus = true) }}
+      </div>
+      <div class="form-group">
+        <label for="state">State</label>
+        {{ form.state(class_ = 'form-control', autofocus = true) }}
+      </div>
+      <div class="form-group">
+        <label for="zip_code">Zip Code</label>
+        {{ form.zip_code(class_ = 'form-control', placeholder='Zip', autofocus = true) }}
+      </div>
+      <div class="form-group">
+        <label for="phone_number">Phone Number</label>
+        {{ form.phone_number(class_ = 'form-control', placeholder='xxx-xxx-xxxx', autofocus = true) }}
+      </div>
+
+      <input type="submit" value="Submit" class="btn btn-info">
+      {{ form.csrf_token }}
+    </form>
+  </div>
+</div>
+{% endblock %}

@@ -1,8 +1,10 @@
 import sys
 import os
 import json
-from flask import Flask, request, abort, jsonify, render_template, session, redirect
+from flask import Flask, request, abort, jsonify, render_template, session, \
+    redirect, flash
 from models import Task, Volunteer, setup_db
+from forms import TaskForm, VolunteerForm
 from auth import AuthError, requires_auth
 from authlib.integrations.flask_client import OAuth
 
@@ -30,7 +32,7 @@ def create_app():
         access_token_url=auth0_base_url + '/oauth/token',
         authorize_url=auth0_base_url + '/authorize',
         client_kwargs={
-            # 'scope': 'openid',
+            'scope': 'openid profile email',
         },
     )
     print('api_base_url', auth0_base_url)
@@ -58,28 +60,24 @@ def create_app():
 
     @app.route('/callback')
     def auth0_callback_handling():
-        print('/callback')
         response = auth0.authorize_access_token()
         token = response.get('access_token')
         resp = auth0.get('userinfo')
         userinfo = resp.json()
 
         session['jwt_token'] = token
-        # session['user'] = {
-        #     'user_id': userinfo['sub'],
-        #     'email': userinfo['name'],
-        #     'first_name': userinfo['nickname'],
-        # }
-
+        session['user'] = {
+            'user_id': userinfo['sub'],
+            'email': userinfo['email'],
+            'first_name': userinfo['nickname'].title(),
+        }
         return redirect('/dashboard')
 
     @app.route('/dashboard')
     # @requires_auth('get:volunteer')
     def dashboard():
-        print('/dashboard')
-
         return render_template('dashboard.html',
-                               # userinfo=session['user'],
+                               userinfo=session['user'],
                                userinfo_pretty=session['jwt_token'])
 
 
@@ -182,6 +180,40 @@ def create_app():
             # request did not contain one or more required fields
             abort(400)
 
+    @app.route('/tasks/add', methods=['GET'])
+    @requires_auth('post:task')
+    def add_task_form():
+        form = TaskForm()
+        return render_template('task_form.html', form=form)
+
+    @app.route('/tasks/add', methods=['POST'])
+    @requires_auth('post:task')
+    def add_task_submission():
+        form = TaskForm()
+        if not form.validate_on_submit():
+            flash('Task could not be created because one or more data fields'
+                  ' were invalid:')
+            for field, message in form.errors.items():
+                flash(message[0])
+            return render_template('task_form.html', form=form)
+
+        # the form is valid
+        title = request.form['title']
+        details = request.form['details']
+        date_needed = request.form['date_needed']
+        status = request.form['status']
+
+        new_task = Task(title, details, date_needed, status)
+        try:
+            new_task.insert()
+            flash('Task ' + title + ' was successfully created')
+        except Exception as e:
+            print('Error!', sys.exc_info())
+            flash('An error occurred.  The Task could not be created')
+            abort(422)
+
+        return redirect('/dashboard')
+
     # Volunteers routes -------------------------------------------------------
     @app.route('/volunteers')
     @requires_auth('get:volunteer')
@@ -282,6 +314,51 @@ def create_app():
         else:
             # request did not contain one or more required fields
             abort(400)
+
+    @app.route('/volunteers/add', methods=['GET'])
+    @requires_auth('post:volunteer')
+    def add_volunteer_form():
+        form = VolunteerForm()
+        return render_template('volunteer_form.html', form=form)
+
+    @app.route('/volunteers/add', methods=['POST'])
+    @requires_auth('post:volunteer')
+    def add_volunteer_submission():
+        form = VolunteerForm()
+        if not form.validate_on_submit():
+            print('form is not valid')
+            flash('Task could not be created because one or more data fields'
+                  ' were invalid:')
+            for field, message in form.errors.items():
+                flash(message[0])
+                print('Error :', field, message[0])
+            return render_template('volunteer_form.html', form=form)
+
+        # the form is valid
+        name = request.form['name']
+        address = request.form['address']
+        city = request.form['city']
+        state = request.form['state']
+        zip_code = request.form['zip_code']
+        phone_number = request.form['phone_number']
+
+        print('name:', name)
+        print('adddress', address)
+        print('city', city)
+        print('state', state)
+        print('zip', zip_code)
+        print('phone', phone_number)
+
+        new_volunteer = Volunteer(name, address, city, state, zip_code, phone_number)
+        try:
+            new_volunteer.insert()
+            flash('Volunteer ' + name + ' was successfully added')
+        except Exception as e:
+            print('Error!', sys.exc_info())
+            flash('An error occurred.  The Volunteer could not be added')
+            abort(422)
+
+        return redirect('/dashboard')
 
     # Error Handlers ----------------------------------------------------------
     @app.errorhandler(400)
