@@ -4,12 +4,12 @@
 
 <br><br><br>
 <div class="container col-4">
+<h3>Volunteers</h3>
+<br>
 <ul class="volunteers">
-    {% for vol in volunteerss %}
+    {% for vol in volunteers %}
     <li>
-        <a href="/volunteers/{{ vol.id }}">
-            <h5>{{ vol.title }}</h5>
-        </a>
+        <a href="/volunteers/{{ vol.id }}"><h5>{{ vol.name }}</h5></a>
     </li>
     {%  endfor %}
 </ul>

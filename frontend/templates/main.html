@@ -35,12 +35,12 @@
 
 
     <!-- Begin unique page content -->
-    <main>
+    <main id="content" role="main" class="container">
       {% with messages = get_flashed_messages() %}
         {% if messages %}
+          <br><br>
           {% for message in messages %}
-            <div class="alert alert-block alert-info fade in">
-              <a class="close" data-dismiss="alert">&times;</a>
+            <div class="alert alert-info" role="alert">
               {{ message }}
             </div>
           {% endfor %}

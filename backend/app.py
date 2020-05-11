@@ -65,9 +65,6 @@ def create_app():
         resp = auth0.get('userinfo')
         userinfo = resp.json()
 
-        global return_web_page
-        return_web_page = True
-        print('setting to True')
         session['return_html'] = True
         session['jwt_token'] = token
         session['user'] = {
@@ -78,7 +75,7 @@ def create_app():
         return redirect('/dashboard')
 
     @app.route('/dashboard')
-    # @requires_auth('get:volunteer')
+    @requires_auth('get:volunteer')
     def dashboard():
         return render_template('dashboard.html',
                                userinfo=session['user'],
@@ -119,6 +116,17 @@ def create_app():
                 'success': True,
                 'tasks': task.format()
             }
+
+    @app.route('/tasks/search', methods=['POST'])
+    def search_tasks():
+        search_term = request.form.get('search_term', '')
+        tasks = Task.query.filter(Task.title.ilike('%{}%'.format(search_term))).all()
+        if not tasks:
+            print('No tasks found')
+            flash('No tasks match "' + search_term + '"')
+            return redirect('/dashboard')
+
+        return render_template('task_list.html', tasks=[task.format() for task in tasks])
 
     @app.route('/tasks/<int:task_id>', methods=['PATCH'])
     @requires_auth('patch:task')
@@ -254,6 +262,18 @@ def create_app():
             'volunteer': volunteer.format()
         }
 
+    @app.route('/volunteers/search', methods=['POST'])
+    def search_volunteers():
+        search_term = request.form.get('search_term', '')
+        volunteers = Volunteer.query.filter(Volunteer.name.ilike('%{}%'.format(search_term))).all()
+
+        if not volunteers:
+            print('No volunteers found')
+            flash('No volunteers match "' + search_term + '"')
+            return redirect('/dashboard')
+
+        return render_template('volunteer_list.html', volunteers=[vol.format() for vol in volunteers])
+
     @app.route('/volunteers/<int:vol_id>', methods=['PATCH'])
     @requires_auth('patch:volunteer')
     def update_volunteer(token, vol_id):
@@ -357,13 +377,6 @@ def create_app():
         state = request.form['state']
         zip_code = request.form['zip_code']
         phone_number = request.form['phone_number']
-
-        print('name:', name)
-        print('adddress', address)
-        print('city', city)
-        print('state', state)
-        print('zip', zip_code)
-        print('phone', phone_number)
 
         new_volunteer = Volunteer(name, address, city, state, zip_code, phone_number)
         try:
