@@ -3,13 +3,52 @@
 {% block content %}
 
 <br><br><br>
-<div class="container col-4">
-      <h3>Welcome {{userinfo['first_name']}}</h3>
-      Token <pre>{{userinfo_pretty}}</pre>
-      <a class="btn btn-info btn-lg btn-block" href="/volunteers">All Volunteers</a>
-      <a class="btn btn-info btn-lg btn-block" href="/volunteers/add">Add a New Volunteer</a>
-      <a class="btn btn-info btn-lg btn-block" href="/tasks">All Tasks</a>
-      <a class="btn btn-info btn-lg btn-block" href="/tasks/add">Add a New Task</a>
-</div>
-{% endblock %}
+<div class="container col-10">
+  <h3>Welcome {{userinfo['first_name']}}</h3>
+  Token <pre>{{userinfo_pretty}}</pre>
+  <br><br>
 
+  <div class="row">
+    <div class="col-5">
+      <form class="form-inline" action="index.html" method="post">
+        <div class="form-group">
+          <input class="form-control mr-sm-2"type="search" placeholder="Search">
+          <button class="btn btn-outline-info" type="submit">Search Volunteers</button>
+        </div>
+        <br><br>
+      </form>
+    </div>
+    <div class="col-5 ml-auto">
+      <form class="form-inline" action="index.html" method="post">
+        <div class="form-group">
+          <input class="form-control mr-sm-2"type="search" placeholder="Search">
+          <button class="btn btn-outline-info" type="submit">Search Tasks</button>
+        </div>
+        <br><br>
+      </form>
+    </div>
+  </div>
+  <br>
+
+  <div class="row">
+    <div class="col-5">
+      <a class="btn btn-info btn-lg btn-block" href="/volunteers">All Volunteers</a>
+    </div>
+    <div class="col-5 ml-auto">
+      <a class="btn btn-info btn-lg btn-block" href="/tasks">All Tasks</a>
+    </div>
+  </div>
+  <br>
+  <div class="row">
+    <div class="col-5">
+      <a class="btn btn-info btn-lg btn-block" href="/volunteers/add">New Volunteer</a>
+    </div>
+    <div class="col-5 ml-auto">
+      <a class="btn btn-info btn-lg btn-block" href="/tasks/add">New Task</a>
+    </div>
+  </div>
+
+</div>
+
+
+{% endblock %}

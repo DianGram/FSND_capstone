@@ -1,0 +1,18 @@
+{% extends 'main.html' %}
+{% block title %}Fyyur{% endblock %}
+{% block content %}
+
+<br><br><br>
+<div class="container col-4">
+<ul class="tasks">
+    {% for task in tasks %}
+    <li>
+        <a href="/tasks/{{ task.id }}">
+            <h5>{{ task.title }}</h5>
+        </a>
+    </li>
+    {%  endfor %}
+</ul>
+</div>
+{% endblock %}
+

@@ -65,6 +65,10 @@ def create_app():
         resp = auth0.get('userinfo')
         userinfo = resp.json()
 
+        global return_web_page
+        return_web_page = True
+        print('setting to True')
+        session['return_html'] = True
         session['jwt_token'] = token
         session['user'] = {
             'user_id': userinfo['sub'],
@@ -80,17 +84,26 @@ def create_app():
                                userinfo=session['user'],
                                userinfo_pretty=session['jwt_token'])
 
-
     # Tasks routes ------------------------------------------------------------
     @app.route('/tasks')
     def get_tasks():
         # returns a list of all tasks
         tasks = Task.query.order_by('id').all()
+        # print('request headers', request.headers)
+        # print('request environ', request.environ)
+        # print('request url root', request.url_root)
+        # print('request get json', request.get_json())
         if not tasks:
             abort(404)
-        return {
-            'success': True,
-            'tasks': [task.format() for task in tasks]}
+
+        formatted_tasks = [task.format() for task in tasks]
+        if session.get('return_html', False):
+            return render_template('task_list.html', tasks=formatted_tasks)
+        else:
+            return {
+                'success': True,
+                'tasks': formatted_tasks
+            }
 
     @app.route('/tasks/<int:task_id>')
     def get_task(task_id):
@@ -99,10 +112,13 @@ def create_app():
         if not task:
             abort(404)
 
-        return {
-            'success': True,
-            'task': task.format()
-        }
+        if session.get('return_html', False):
+            return render_template('show_task.html', task=task.format())
+        else:
+            return {
+                'success': True,
+                'tasks': task.format()
+            }
 
     @app.route('/tasks/<int:task_id>', methods=['PATCH'])
     @requires_auth('patch:task')
@@ -188,7 +204,7 @@ def create_app():
 
     @app.route('/tasks/add', methods=['POST'])
     @requires_auth('post:task')
-    def add_task_submission():
+    def add_task_submission(token=None):
         form = TaskForm()
         if not form.validate_on_submit():
             flash('Task could not be created because one or more data fields'

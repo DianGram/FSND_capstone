@@ -1,0 +1,18 @@
+{% extends 'main.html' %}
+{% block title %}Fyyur{% endblock %}
+{% block content %}
+
+<br><br><br>
+<div class="container col-4">
+<ul class="volunteers">
+    {% for vol in volunteerss %}
+    <li>
+        <a href="/volunteers/{{ vol.id }}">
+            <h5>{{ vol.title }}</h5>
+        </a>
+    </li>
+    {%  endfor %}
+</ul>
+</div>
+{% endblock %}
+
