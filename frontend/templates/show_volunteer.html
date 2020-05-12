@@ -1,0 +1,20 @@
+{% extends 'main.html' %}
+{% block content %}
+
+<div class="row">
+  <div class="contaier col-4" align="right">
+    <br><br><br>
+    <a href="/tasks/patch"><button class="btn btn-sm btn-info" type="submit" name="update">Update</button></a><br><br>
+    <a href="/tasks/patch"><button class="btn btn-sm btn-info" type="submit" name="delete">Delete</button></a>
+  </div>
+  <div class="container col-4" style="color: darkcyan">
+  <h3 align="center">Volunteers</h3>
+  <br>
+  <a href="/volunteers/{{ vol.id }}" style="color: darkcyan"><h5>{{ vol.name }}</h5></a>
+  {{ vol.phone_number }}<br>
+  {{ vol.address }}<br>
+  {{ vol.city }},  {{ vol.state }} {{ vol.zip_code }}
+  <br><br>
+  <div class="container col-2" style="color: darkcyan"></div>
+</div>
+{% endblock %}

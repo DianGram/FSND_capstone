@@ -1,15 +1,17 @@
 {% extends 'main.html' %}
-{% block title %}Fyyur{% endblock %}
 {% block content %}
 
-<br><br><br>
-<div class="container col-4">
-<h3>Volunteers</h3>
+<div class="container col-4" style="color: darkcyan">
+<h3 align="center">Volunteers</h3>
 <br>
 <ul class="volunteers">
     {% for vol in volunteers %}
     <li>
-        <a href="/volunteers/{{ vol.id }}"><h5>{{ vol.name }}</h5></a>
+        <a href="/volunteers/{{ vol.id }}" style="color: darkcyan"><h5>{{ vol.name }}</h5></a>
+        {{ vol.phone_number }}<br>
+        {{ vol.address }}<br>
+        {{ vol.city }},  {{ vol.state }} {{ vol.zip_code }}
+        <br><br>
     </li>
     {%  endfor %}
 </ul>

@@ -1,0 +1,27 @@
+{% extends 'main.html' %}
+{% block content %}
+
+<div class="row">
+  <div class="contaier col-4" align="right">
+    <br><br><br>
+    <a href="/tasks/patch/{{ task.id }}"><button class="btn btn-sm btn-info" type="submit" name="update">Update Task</button></a><br><br>
+    <a href="/tasks/delete/{{ task.id }}"><button class="btn btn-sm btn-info" type="submit" name="delete">Delete Task</button></a>
+  </div>
+  <div class="container col-4" style="color: darkcyan">
+    <h3 align="center">{{ task.title }}</h3>
+    <br>
+    Status: {{ task.status }}<br>
+    Date Needed: {{ task.date_needed }}<br>
+    {% if task.volunteer_name %}
+      Assigned to: <a href="/volunteers/{{ task.volunteer_id }}" style="color: #074064">
+        {{ task.volunteer_name }}</a><br><br>
+    {% endif %}
+    Details:<br>
+    {{ task.details }}
+  </div>
+
+  <div class="container col-2" style="color: darkcyan"></div>
+
+</div>
+
+{% endblock %}

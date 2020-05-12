@@ -122,7 +122,6 @@ def create_app():
         search_term = request.form.get('search_term', '')
         tasks = Task.query.filter(Task.title.ilike('%{}%'.format(search_term))).all()
         if not tasks:
-            print('No tasks found')
             flash('No tasks match "' + search_term + '"')
             return redirect('/dashboard')
 
@@ -246,13 +245,17 @@ def create_app():
         print('/volunteers')
         volunteers = Volunteer.query.order_by('name').all()
         print('volunteer', volunteers[0])
-        return {'success': True,
-                'volunteers': [vol.format() for vol in volunteers]
-                }
+
+        if session.get('return_html', False):
+            return render_template('volunteer_list.html', volunteers=[v.format() for v in volunteers])
+        else:
+            return {'success': True,
+                    'volunteers': [vol.format() for vol in volunteers]
+                    }
 
     @app.route('/volunteers/<int:vol_id>')
     @requires_auth('get:volunteer')
-    def get_volunteer(token, vol_id):
+    def get_volunteer(vol_id, token=None):
         # returns the volunteer whose id = vol_id
         volunteer = Volunteer.query.get(vol_id)
         if not volunteer:
