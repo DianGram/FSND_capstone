@@ -6,8 +6,9 @@
     <br><br><br>
     <form method="get">
       <button class="btn btn-sm btn-info" type="submit" formaction="/tasks/update/{{ task.id }}">Update Task</button><br><br>
-      <button class="btn btn-sm btn-info" type="submit" formmethod="post" formaction="/tasks/delete/{{ task.id }}">Delete Task</button>
     </form>
+    <button class="btn btn-sm btn-info" type="submit" onclick="deleteButtonClicked({{ task.id }})">Delete Task</button>
+
   </div>
 
   <div class="container col-4" style="color: darkcyan">
@@ -26,5 +27,24 @@
   <div class="container col-2" style="color: darkcyan"></div>
 
 </div>
+
+<script>
+
+  function deleteButtonClicked(vol_id) {
+      if (confirm('Are you sure you want to delete this Task?')) {
+          fetch('/tasks/' + vol_id, {
+              method: 'DELETE'
+          })
+          .then(function() {
+              window.location.href = '/tasks';
+          })
+          .catch(function(e) {
+              console.log('Error!', e);
+          })
+      }
+  }
+
+</script>
+
 
 {% endblock %}

@@ -5,9 +5,8 @@
 <div class="container col-5">
   <div class="form-wrapper">
     <form method="post" class="form" style="color: darkcyan">
-        {% if action == 'Update' %}<h3 class="form-heading">Update Volunteer</h3><br>
-        {% else %}<h3 class="form-heading">Add a New Volunteer</h3><br>
-        {%  endif %}
+      <h3 class="form-heading">{{ title }}</h3><br>
+
       <div class="form-group">
         <label for="name">Name</label>
         {{ form.name(class_ = 'form-control', placeholder='Name', autofocus = true) }}
