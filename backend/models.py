@@ -39,7 +39,7 @@ class Task(db.Model):
                                      cascade='all, delete')
     )
 
-    def __init__(self, title, details, date_needed, status=None):
+    def __init__(self, title, details, date_needed, status):
         self.title = title
         self.details = details
         self.date_needed = date_needed
@@ -92,8 +92,8 @@ class Volunteer(db.Model):
     phone_number = db.Column(db.String(12), nullable=False)
     tasks = db.relationship('Task',
                             backref=db.backref(
-                                'task_association',
-                                cascade='all, delete'))
+                                'task_association'))
+                                # cascade='all, delete'))
 
     def __init__(self, name, address, city, state, zip_code, phone_number):
         self.name = name
@@ -104,7 +104,7 @@ class Volunteer(db.Model):
         self.phone_number = phone_number
 
     def format(self):
-        task_list = Task.query.filter_by(volunteer_id=self.id).all()
+        task_list = Task.query.filter_by(volunteer_id=self.id).order_by(Task.id).all()
         return {
             'id': self.id,
             'name': self.name,

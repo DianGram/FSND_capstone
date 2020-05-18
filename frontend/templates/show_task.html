@@ -7,7 +7,8 @@
     <form method="get">
       <button class="btn btn-sm btn-info" type="submit" formaction="/tasks/update/{{ task.id }}">Update Task</button><br><br>
     </form>
-    <button class="btn btn-sm btn-info" type="submit" onclick="deleteButtonClicked({{ task.id }})">Delete Task</button>
+    <div class="hidden" id="permit-delete">{{ permit_delete }}</div>
+    <button class="btn btn-sm btn-info" id="delete-button" type="submit" onclick="deleteButtonClicked({{ task.id }})">Delete Task</button>
 
   </div>
 
@@ -30,21 +31,42 @@
 
 <script>
 
-  function deleteButtonClicked(vol_id) {
-      if (confirm('Are you sure you want to delete this Task?')) {
-          fetch('/tasks/' + vol_id, {
-              method: 'DELETE'
-          })
-          .then(function() {
+function deleteButtonClicked(vol_id) {
+  if (confirm('Are you sure you want to delete this Task?')) {
+      fetch('/tasks/' + vol_id, {
+          method: 'DELETE'
+      })
+      .then(function(resp) {
+          if (resp['status'] === true) {
               window.location.href = '/tasks';
-          })
-          .catch(function(e) {
-              console.log('Error!', e);
-          })
-      }
+          }
+          else {
+              window.location.reload();
+          }
+      })
+      .catch(function(e) {
+          console.log('Error!', e);
+      })
   }
+}
+
+
+function setHidden() {
+  console.log('setHidden')
+  if (document.getElementById("permit-delete").innerText !== 'yes') {
+      document.getElementById("delete-button").className = 'hidden';
+      console.log('True')
+  }
+}
 
 </script>
+
+
+<style onload="setHidden()">
+  .hidden {
+    display: none;
+  }
+</style>
 
 
 {% endblock %}

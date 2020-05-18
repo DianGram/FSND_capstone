@@ -5,7 +5,7 @@
 <div class="container col-5">
   <div class="form-wrapper">
     <form method="post" class="form" style="color: darkcyan">
-        <h3 class="form-heading">{{ title }}</h3><br>
+        <h3 class="form-heading" id="title">{{ title }}</h3><br>
 
       <div class="form-group">
         <label for="title">Title</label>
@@ -23,14 +23,32 @@
         <label for="status">Status</label>
         {{ form.status(class_ = 'form-control', autofocus = true) }}
       </div>
-      <div class="form-group">
+      <div class="form-group" id="assignVolunteer">
         <label for="vol_id">Assign Volunteer</label>
         {{ form.volunteer_id(class_ = 'form-control', autofocus = true) }}
       </div>
-
+      <br>
       <input type="submit" value="Submit" class="btn btn-info">
       {{ form.csrf_token }}
     </form>
   </div>
 </div>
+
+<script type="text/javascript">
+
+function setHidden() {
+  if (document.getElementById("title").innerText === 'Add a New Task') {
+    document.getElementById("assignVolunteer").className = 'hidden';
+  }
+}
+
+</script>
+
+
+<style onload="setHidden()">
+  .hidden {
+    display: none;
+  }
+</style>
+
 {% endblock %}

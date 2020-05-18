@@ -18,6 +18,16 @@
     {{ volunteer.address }}<br>
     {{ volunteer.city }},  {{ volunteer.state }} {{ volunteer.zip_code }}
     <br><br>
+    Assigned Tasks:<br>
+    <ul>
+      {% for task in volunteer.tasks %}
+        <li>
+          <a href="/tasks/{{ task.id }}" style="color: #074064">{{ task.title }}</a> <br>
+          Status: {{ task.status }} <br>
+          Date Needed: {{ task.date_needed }} <br><br>
+        </li>
+      {% endfor %}
+    </ul>
     <div class="container col-2" style="color: darkcyan"></div>
   </div>
 </div>
@@ -29,8 +39,13 @@
           fetch('/volunteers/' + vol_id, {
               method: 'DELETE'
           })
-          .then(function() {
-              window.location.href = '/volunteers';
+          .then(function(resp) {
+              if (resp['status'] === true) {
+                  window.location.href = '/volunteers';
+              }
+              else {
+                  window.location.reload();
+              }
           })
           .catch(function(e) {
               console.log('Error!', e);
