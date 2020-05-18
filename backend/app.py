@@ -1,6 +1,5 @@
 import sys
 import os
-import json
 from urllib.parse import urlencode
 
 from flask import Flask, request, abort, jsonify, render_template, session, \
@@ -10,10 +9,12 @@ from forms import TaskForm, VolunteerForm
 from auth import AuthError, requires_auth, has_permission
 from authlib.integrations.flask_client import OAuth
 
+
 def create_app():
     # create the app
     static_folder = os.path.abspath('../frontend/static')
-    app = Flask(__name__, template_folder='../frontend/templates', static_folder=static_folder)
+    app = Flask(__name__, template_folder='../frontend/templates',
+                static_folder=static_folder)
     setup_db(app)
 
     auth0_domain = os.environ.get('AUTH0_DOMAIN')
@@ -47,14 +48,17 @@ def create_app():
     # Login route
     @app.route('/login')
     def login():
-        return auth0.authorize_redirect(redirect_uri=redirect_url, audience=audience)
+        return auth0.authorize_redirect(redirect_uri=redirect_url,
+                                        audience=audience)
 
     @app.route('/logout')
     def logout():
         session.clear()
-        params = {'returnTo': url_for('index', _external=True), 'client_id': client_id}
+        params = {'returnTo': url_for('index', _external=True),
+                  'client_id': client_id}
         flash('You are now logged out')
-        return redirect(auth0.api_base_url + '/v2/logout?' + urlencode(params))
+        return redirect(auth0.api_base_url + '/v2/logout?' +
+                        urlencode(params))
 
     @app.route('/callback')
     def auth0_callback_handling():
@@ -65,7 +69,6 @@ def create_app():
 
         session['return_html'] = True
         session['jwt_token'] = token
-        print('requires auth, delete:task', requires_auth('delete:task'))
         if has_permission(token, 'delete:task'):
             session['delete_task_permitted'] = 'yes'
         else:
@@ -113,7 +116,8 @@ def create_app():
     @app.route('/tasks/open')
     def get_open_tasks():
         # returns a list of all tasks with status of 'Open'
-        tasks = Task.query.filter(Task.status == 'Open').order_by(Task.id).all()
+        tasks = Task.query.filter(Task.status == 'Open')\
+            .order_by(Task.id).all()
         formatted_tasks = [task.format() for task in tasks]
         return render_template('task_list.html', tasks=formatted_tasks)
 
@@ -127,7 +131,8 @@ def create_app():
         if session.get('return_html', False):
             return render_template('show_task.html',
                                    task=task.format(),
-                                   permit_delete=session.get('delete_task_permitted', 'no'))
+                                   permit_delete=session.get
+                                   ('delete_task_permitted', 'no'))
         else:
             return {
                 'success': True,
@@ -138,14 +143,19 @@ def create_app():
     def search_tasks():
         # returns a list of all tasks whose title contains the search term
         search_term = request.form.get('search_term', '')
-        tasks = Task.query.filter(Task.title.ilike('%{}%'.format(search_term))).order_by('id').all()
+        tasks = Task.query.filter(Task.title.ilike('%{}%'
+                                                   .format(search_term)))\
+            .order_by('id').all()
         if not tasks:
             flash('No tasks match "' + search_term + '"')
             return redirect('/dashboard')
 
-        return render_template('task_list.html', tasks=[task.format() for task in tasks])
+        return render_template('task_list.html',
+                               tasks=[task.format() for task in tasks])
 
     def get_volunteer_choices():
+        # returns a list of tuples of all volunteer ids and names that is used
+        # to populate the assign volunteer select field on the task form
         volunteers = Volunteer.query.order_by('name').all()
         choices = [(v.id, v.name) for v in volunteers]
         choices.insert(0, (0, 'None'))
@@ -154,26 +164,30 @@ def create_app():
     @app.route('/tasks/update/<int:task_id>', methods=['GET'])
     @requires_auth('patch:task')
     def update_task_form(task_id):
-        # sends the task_form.html page with action of "Update"
+        # sends the task_form.html page with title of "Update Task"
         task = Task.query.get(task_id)
         form = TaskForm(obj=task)
 
         # get all volunteers in name order for volunteer choices in form
         form.volunteer_id.choices = get_volunteer_choices()
-        return render_template('task_form.html', form=form, task=task, title="Update Task")
+
+        return render_template('task_form.html',
+                               form=form,
+                               task=task,
+                               title="Update Task")
 
     @app.route('/tasks/update/<int:task_id>', methods=['POST'])
     @requires_auth('patch:task')
     def update_task_submission(task_id):
-        # updates the task having id = task_id and returns the updated task to the gui
+        # updates the task having id = task_id and returns the updated task
+        # to the gui  Use route /tasks/task_id method='patch'to return the
+        # task to the api
         form = TaskForm()
         form.volunteer_id.choices = get_volunteer_choices()
 
-        # print('choices:')
-        # for k, v in form.volunteer_id.choices:
-        #     print(k, ';', v)
         if not form.validate_on_submit():
-            print("form not valid")
+            # if the form has errors, display error messages and resend the
+            # current page
             flash('Task ' + request.form['title'] + ' could not be updated be'
                                                     'cause one or more fields'
                                                     ' were invalid:')
@@ -181,14 +195,18 @@ def create_app():
                 flash(field + ' ' + message[0])
             task = form.data
             task['id'] = task_id
-            return render_template('task_form.html', form=form, task=task, title="Update Task")
+            return render_template('task_form.html',
+                                   form=form,
+                                   task=task,
+                                   title="Update Task")
 
         # form is valid
-        # form.volunteer_id.data will = 0 when no volunteer is selected but since 0 is not an
-        # id in the volunteer database, it throws a ForeignKeyViolation error.  The only way I
-        # found around this error is to set a field that is not in the form to None and then
-        # overlay the value after the form.populate_obj statement.  Changing volunteer-id.
-        # data to None did not have any effect.
+        # form.volunteer_id.data will = 0 when no volunteer is selected but
+        # since 0 is not an id in the volunteer database, it throws a
+        # ForeignKeyViolation error.  The only way I found around this error
+        # is to set a local variable that is not in the form to 'None' and then
+        # overlay the value after the form.populate_obj statement.  Changing
+        # volunteer-id.data to 'None' did not have any effect.
         volunteer_id = form.volunteer_id.data
         if volunteer_id == 0:
             volunteer_id = None
@@ -209,7 +227,9 @@ def create_app():
     @app.route('/tasks/<int:task_id>', methods=['PATCH'])
     @requires_auth('patch:task')
     def patch_task(task_id):
-        # updates the task having id = task_id and returns the updated task to the api
+        # updates the task having id = task_id and returns the updated task
+        # to the api.  Use route /tasks/update/vol_id to return the task
+        # to the gui
         task = Task.query.get(task_id)
         if not task:
             abort(404)
@@ -236,24 +256,6 @@ def create_app():
             'success': True,
             'task': task.format()
         }
-
-    # @app.route('/tasks/delete/<int:task_id>', methods=['POST'])
-    # @requires_auth('delete:task')
-    # def delete_task(task_id):
-    #     task = Task.query.get(task_id)
-    #     if not task:
-    #         flash('Task ' + task.title + ' was not found')
-    #         abort(404)
-    #
-    #     try:
-    #         task.delete()
-    #     except Exception as e:
-    #         print('422 Error  ', sys.exc_info())
-    #         flash('Task "' + task.title + '" could not be deleted')
-    #         abort(422)
-    #
-    #     flash('Task "' + task.title + '" was successfully deleted')
-    #     return redirect('/tasks')
 
     @app.route('/tasks/<int:task_id>', methods=['DELETE'])
     @requires_auth('delete:task')
@@ -305,24 +307,34 @@ def create_app():
     @app.route('/tasks/add', methods=['GET'])
     @requires_auth('post:task')
     def add_task_form():
+        # returns a blank task_form to the gui
         form = TaskForm()
         form.volunteer_id.choices = get_volunteer_choices()
-        return render_template('task_form.html', form=form, title="Add a New Task")
+        return render_template('task_form.html',
+                               form=form,
+                               title="Add a New Task")
 
     @app.route('/tasks/add', methods=['POST'])
     @requires_auth('post:task')
     def add_task_submission():
+        # adds a new task with data from task_form and redirects to the
+        # dashboard
         form = TaskForm()
         form.volunteer_id.choices = get_volunteer_choices()
 
         if not form.validate_on_submit():
+            # if the form has errors, display error messages and resend the
+            # current page
             flash('Task could not be created because one or more data fields'
                   ' were invalid:')
             for field, message in form.errors.items():
                 flash(message[0])
-            return render_template('task_form.html', form=form, title="Add a New Task")
+            return render_template('task_form.html',
+                                   form=form,
+                                   title="Add a New Task")
 
         # the form is valid
+        # note volunteer_id cannot be entered when adding a task
         title = request.form['title']
         details = request.form['details']
         date_needed = request.form['date_needed']
@@ -347,7 +359,8 @@ def create_app():
         volunteers = Volunteer.query.order_by('name').all()
 
         if session.get('return_html', False):
-            return render_template('volunteer_list.html', volunteers=[v.format() for v in volunteers])
+            return render_template('volunteer_list.html',
+                                   volunteers=[v.format() for v in volunteers])
         else:
             return {'success': True,
                     'volunteers': [vol.format() for vol in volunteers]
@@ -364,7 +377,8 @@ def create_app():
         if session.get('return_html', False):
             return render_template('show_volunteer.html',
                                    volunteer=volunteer.format(),
-                                   permit_delete=session.get('delete_vol_permitted', 'no'))
+                                   permit_delete=session
+                                   .get('delete_vol_permitted', 'no'))
         else:
             return {
                 'success': True,
@@ -373,9 +387,14 @@ def create_app():
 
     @app.route('/volunteers/search', methods=['POST'])
     def search_volunteers():
-        # returns a list of all volunteers whose name contains the search term - gui only
+        # returns a list of all volunteers whose name contains the search term
+        # - gui only
         search_term = request.form.get('search_term', '')
-        volunteers = Volunteer.query.filter(Volunteer.name.ilike('%{}%'.format(search_term))).order_by('name').all()
+        # note this line looks ridiculous but is what pep8online.com requires
+        volunteers = Volunteer.query\
+            .filter(Volunteer.name.ilike('%{}%'
+                                         .format(search_term)))\
+            .order_by('name').all()
 
         if not volunteers:
             flash('No volunteers match "' + search_term + '"')
@@ -405,6 +424,8 @@ def create_app():
         form = VolunteerForm()
 
         if not form.validate_on_submit():
+            # if the form has errors, display error messages and resend the
+            # current page
             flash('Volunteer ' + request.form['name'] + ' could not be updated'
                                                         ' because one or more '
                                                         'fields were invalid:')
@@ -419,17 +440,17 @@ def create_app():
 
         # form is valid
         try:
-            volunteer=Volunteer.query.get(vol_id)
-            form=VolunteerForm(obj=volunteer)
+            volunteer = Volunteer.query.get(vol_id)
+            form = VolunteerForm(obj=volunteer)
             form.populate_obj(volunteer)
             volunteer.update()
         except Exception as e:
-            flash('Volunteer ' + request.form['name'] + ' could not be updated')
+            flash('Volunteer ' + request.form['name'] +
+                  ' could not be updated')
             abort(422)
 
         flash('Volunteer ' + volunteer.name + ' was successfully updated')
         return redirect('/volunteers')
-
 
     @app.route('/volunteers/<int:vol_id>', methods=['PATCH'])
     @requires_auth('patch:volunteer')
@@ -450,7 +471,8 @@ def create_app():
         volunteer.city = body.get('city', volunteer.city)
         volunteer.state = body.get('state', volunteer.state)
         volunteer.zip_code = body.get('zip_code', volunteer.zip_code)
-        volunteer.phone_number = body.get('phone_number', volunteer.phone_number)
+        volunteer.phone_number = body.get('phone_number',
+                                          volunteer.phone_number)
 
         try:
             volunteer.update()
@@ -484,7 +506,7 @@ def create_app():
     @app.route('/volunteers/create', methods=['POST'])
     @requires_auth('post:volunteer')
     def create_volunteer():
-        # creates a new volunteer and returns it
+        # creates a new volunteer and returns it to the api
         body = request.get_json()
         if not body:
             abort(400)
@@ -499,7 +521,8 @@ def create_app():
         # all fields are required
         if name and address and city and state and zip_code and phone_number:
             try:
-                new_volunteer = Volunteer(name, address, city, state, zip_code, phone_number)
+                new_volunteer = Volunteer(name, address, city, state,
+                                          zip_code, phone_number)
                 new_volunteer.insert()
                 return {
                     'success': True,
@@ -514,19 +537,28 @@ def create_app():
     @app.route('/volunteers/add', methods=['GET'])
     @requires_auth('post:volunteer')
     def add_volunteer_form():
+        # sends a blank volunteer_form to the gui
         form = VolunteerForm()
-        return render_template('volunteer_form.html', form=form, title="Add a New Volunteer")
+        return render_template('volunteer_form.html',
+                               form=form,
+                               title="Add a New Volunteer")
 
     @app.route('/volunteers/add', methods=['POST'])
     @requires_auth('post:volunteer')
     def add_volunteer_submission():
+        # adds a new volunteer with data from volunteer_form and redirects to
+        # the dashboard
         form = VolunteerForm()
         if not form.validate_on_submit():
+            # if the form has errors, display error messages and resend the
+            # current page
             flash('Task could not be created because one or more data fields'
                   ' were invalid:')
             for field, message in form.errors.items():
                 flash(message[0])
-            return render_template('volunteer_form.html', form=form, title="Add a New Volunteer")
+            return render_template('volunteer_form.html',
+                                   form=form,
+                                   title="Add a New Volunteer")
 
         # the form is valid
         name = request.form['name']
@@ -536,7 +568,8 @@ def create_app():
         zip_code = request.form['zip_code']
         phone_number = request.form['phone_number']
 
-        new_volunteer = Volunteer(name, address, city, state, zip_code, phone_number)
+        new_volunteer = Volunteer(name, address, city, state, zip_code,
+                                  phone_number)
         try:
             new_volunteer.insert()
             flash('Volunteer ' + name + ' was successfully added')
@@ -590,13 +623,12 @@ def create_app():
     @app.errorhandler(AuthError)
     def auth_error(error):
         message = error.error['code'] + ' - ' + error.error['description']
-        print('message = ', message)
         flash('Authentication Error:  ' + message)
-        return {
-                   "success": False,
-                   "error": "Authentication Error",
-                   "message": message
-               }, 401
+        return jsonify({
+            "success": False,
+            "error": "Authentication Error",
+            "message": message
+        }), 401
 
     return app
 
