@@ -2,12 +2,14 @@
 {% block content %}
 
 <div class="row">
-  <div class="contaier col-4" align="right">
+  <div class="container col-4" align="right">
     <br><br>
     <form method="get">
       <button class="btn btn-sm btn-info" type="submit" formaction="/volunteers/update/{{ volunteer.id }}">Update Volunteer</button><br><br>
     </form>
-    <button class="btn btn-sm btn-info" type="submit" onclick="deleteButtonClicked({{ volunteer.id }})">Delete Volunteer</button>
+    <div class="hidden" id="permit-delete">{{ permit_delete }}</div>
+    <button class="btn btn-sm btn-info" id="delete-button" type="submit" onclick="deleteButtonClicked({{ volunteer.id }})">Delete Volunteer</button>
+
 
   </div>
 
@@ -18,7 +20,7 @@
     {{ volunteer.address }}<br>
     {{ volunteer.city }},  {{ volunteer.state }} {{ volunteer.zip_code }}
     <br><br>
-    Assigned Tasks:<br>
+    {%  if volunteer.tasks %}Assigned Tasks:{% else %}No Assigned Tasks{% endif %}<br>
     <ul>
       {% for task in volunteer.tasks %}
         <li>
@@ -39,8 +41,8 @@
           fetch('/volunteers/' + vol_id, {
               method: 'DELETE'
           })
-          .then(function(resp) {
-              if (resp['status'] === true) {
+          .then(function(response) {
+              if (response.ok === true) {
                   window.location.href = '/volunteers';
               }
               else {
@@ -53,5 +55,20 @@
       }
   }
 
+  function setHidden() {
+  console.log('setHidden', document.getElementById("permit-delete").innerText);
+  if (document.getElementById("permit-delete").innerText !== 'yes') {
+      document.getElementById("delete-button").className = 'hidden';
+      console.log('yes')
+  }
+}
 </script>
+
+
+<style onload="setHidden()">
+  .hidden {
+    display: none;
+  }
+</style>
+
 {% endblock %}

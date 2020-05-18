@@ -69,14 +69,27 @@ def create_app():
 
         session['return_html'] = True
         session['jwt_token'] = token
+
         if has_permission(token, 'delete:task'):
             session['delete_task_permitted'] = 'yes'
         else:
             session['delete_task_permitted'] = 'no'
+
         if has_permission(token, 'delete:volunteer'):
             session['delete_vol_permitted'] = 'yes'
         else:
             session['delete_vol_permitted'] = 'no'
+
+        if has_permission(token, 'post:task'):
+            session['add_task_permitted'] = 'yes'
+        else:
+            session['add_task_permitted'] = 'no'
+
+        if has_permission(token, 'post:volunteer'):
+            session['add_vol_permitted'] = 'yes'
+        else:
+            session['add_vol_permitted'] = 'no'
+
         session['user'] = {
             'user_id': userinfo['sub'],
             'email': userinfo['email'],
@@ -87,6 +100,13 @@ def create_app():
     @app.route('/dashboard')
     # @requires_auth('get:volunteer')
     def dashboard():
+        print('Has post:task permission',
+              has_permission(session['jwt_token'], 'post:task'))
+        print('session[add_task_permitted] =', session['add_task_permitted'])
+        print('Has post:volunteer permission',
+              has_permission(session['jwt_token'], 'post:volunteer'))
+        print('session[add_vol_permitted] =', session['add_vol_permitted'])
+
         # if user is not logged in, they are not authorized for this route
         # so send them to the / route
         if session.get('jwt_token', False):
@@ -106,7 +126,10 @@ def create_app():
 
         formatted_tasks = [task.format() for task in tasks]
         if session.get('return_html', False):
-            return render_template('task_list.html', tasks=formatted_tasks)
+            return render_template('task_list.html',
+                                   tasks=formatted_tasks,
+                                   permit_add=session.get('add_task_permitted',
+                                                          'no'))
         else:
             return {
                 'success': True,
@@ -116,10 +139,13 @@ def create_app():
     @app.route('/tasks/open')
     def get_open_tasks():
         # returns a list of all tasks with status of 'Open'
-        tasks = Task.query.filter(Task.status == 'Open')\
+        tasks = Task.query.filter(Task.status == 'Open') \
             .order_by(Task.id).all()
         formatted_tasks = [task.format() for task in tasks]
-        return render_template('task_list.html', tasks=formatted_tasks)
+        return render_template('task_list.html',
+                               tasks=formatted_tasks,
+                               permit_add=session.get('add_task_permitted',
+                                                      'no'))
 
     @app.route('/tasks/<int:task_id>')
     def get_task(task_id):
@@ -143,15 +169,16 @@ def create_app():
     def search_tasks():
         # returns a list of all tasks whose title contains the search term
         search_term = request.form.get('search_term', '')
-        tasks = Task.query.filter(Task.title.ilike('%{}%'
-                                                   .format(search_term)))\
-            .order_by('id').all()
+        tasks = Task.query.filter(Task.title.ilike('%{}%'.format(
+            search_term))).order_by('id').all()
         if not tasks:
             flash('No tasks match "' + search_term + '"')
             return redirect('/dashboard')
 
         return render_template('task_list.html',
-                               tasks=[task.format() for task in tasks])
+                               tasks=[task.format() for task in tasks],
+                               permit_add=session.get('add_task_permitted',
+                                                      'no'))
 
     def get_volunteer_choices():
         # returns a list of tuples of all volunteer ids and names that is used
@@ -360,7 +387,9 @@ def create_app():
 
         if session.get('return_html', False):
             return render_template('volunteer_list.html',
-                                   volunteers=[v.format() for v in volunteers])
+                                   volunteers=[v.format() for v in volunteers],
+                                   permit_add=session.get('add_task_permitted',
+                                                          'no'))
         else:
             return {'success': True,
                     'volunteers': [vol.format() for vol in volunteers]
@@ -390,18 +419,17 @@ def create_app():
         # returns a list of all volunteers whose name contains the search term
         # - gui only
         search_term = request.form.get('search_term', '')
-        # note this line looks ridiculous but is what pep8online.com requires
-        volunteers = Volunteer.query\
-            .filter(Volunteer.name.ilike('%{}%'
-                                         .format(search_term)))\
-            .order_by('name').all()
+        volunteers = Volunteer.query.filter(Volunteer.name.ilike(
+            '%{}%'.format(search_term))).order_by('name').all()
 
         if not volunteers:
             flash('No volunteers match "' + search_term + '"')
             return redirect('/dashboard')
 
         return render_template('volunteer_list.html',
-                               volunteers=[vol.format() for vol in volunteers])
+                               volunteers=[vol.format() for vol in volunteers],
+                               permit_add=session.get('add_task_permitted',
+                                                      'no'))
 
     @app.route('/volunteers/update/<int:vol_id>', methods=['GET'])
     @requires_auth('patch:volunteer')

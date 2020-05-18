@@ -19,8 +19,8 @@ def setup_db(app):
 
 '''
 Task class
-Contains the task title, details, date needed, status and, if status is not 
-open, a volunteer id. A task will have at most 1 volunteer associated with it
+Contains the task title, details, date needed, status and a volunteer id. 
+A task will have at most 1 volunteer associated with it
 '''
 
 
@@ -35,8 +35,7 @@ class Task(db.Model):
     volunteer_id = db.Column(db.Integer, db.ForeignKey('volunteer.id'))
     volunteers = db.relationship('Volunteer',
                                  backref=db.backref(
-                                     'volunteer_association',
-                                     cascade='all, delete')
+                                     'volunteer_association')
     )
 
     def __init__(self, title, details, date_needed, status):
@@ -93,7 +92,6 @@ class Volunteer(db.Model):
     tasks = db.relationship('Task',
                             backref=db.backref(
                                 'task_association'))
-                                # cascade='all, delete'))
 
     def __init__(self, name, address, city, state, zip_code, phone_number):
         self.name = name

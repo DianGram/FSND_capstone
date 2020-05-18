@@ -1,22 +1,52 @@
 {% extends 'main.html' %}
 {% block content %}
 
-<div class="container col-4" style="color: darkcyan">
-<h3 align="center">Tasks</h3><br>
-<ul class="tasks">
+<div class="row">
+  <div class="container col-3" align="right">
+    <br><br><br>
+    <div class="hidden" id="permit_add">{{ permit_add }}</div>
+    <form method="get">
+      <button class="btn btn-sm btn-info" id="add_button" type="submit" formaction="/tasks/add">Add a New Task</button><br><br>
+    </form>
+  </div>
+
+  <div class="container col-5" style="color: darkcyan">
+  <h3 align="center">Tasks</h3><br>
+  <ul class="tasks">
     {% for task in tasks %}
     <li>
-        <a href="/tasks/{{ task.id }}" style="color: darkcyan"><h5>{{ task.title }}</h5></a>
-        Status: {{ task.status }}<br>
-        Date Needed: {{ task.date_needed }}<br>
-        {% if task.volunteer_name %}
-        Assigned to: {{ task.volunteer_name }}<br><br>
-        {% endif %}
-        {{ task.details }}
-        <br><br>
+      <a href="/tasks/{{ task.id }}" style="color: darkcyan"><h5>{{ task.title }}</h5></a>
+      Status: {{ task.status }}<br>
+      Date Needed: {{ task.date_needed }}<br>
+      {% if task.volunteer_name %}
+      Assigned to: {{ task.volunteer_name }}<br><br>
+      {% endif %}
+      {{ task.details }}
+      <br><br>
     </li>
     {%  endfor %}
-</ul>
-</div>
-{% endblock %}
+  </ul>
+  </div>
 
+  <div class="container col-2" style="color: darkcyan"></div>
+</div>
+
+<script type="text/javascript">
+  function setHidden() {
+      console.log('setHidden', document.getElementById('permit_add').innerText);
+    if (document.getElementById("permit_add").innerText !== 'yes') {
+        document.getElementById("add_button").className = 'hidden';
+    }
+  }
+
+</script>
+
+
+<style onload="setHidden()">
+  .hidden {
+    display: none;
+  }
+</style>
+
+
+{% endblock %}

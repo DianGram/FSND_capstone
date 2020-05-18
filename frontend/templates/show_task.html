@@ -31,13 +31,13 @@
 
 <script>
 
-function deleteButtonClicked(vol_id) {
+function deleteButtonClicked(task_id) {
   if (confirm('Are you sure you want to delete this Task?')) {
-      fetch('/tasks/' + vol_id, {
+      fetch('/tasks/' + task_id, {
           method: 'DELETE'
       })
-      .then(function(resp) {
-          if (resp['status'] === true) {
+      .then(function(response) {
+          if (response.ok === true) {
               window.location.href = '/tasks';
           }
           else {
@@ -52,10 +52,8 @@ function deleteButtonClicked(vol_id) {
 
 
 function setHidden() {
-  console.log('setHidden')
   if (document.getElementById("permit-delete").innerText !== 'yes') {
       document.getElementById("delete-button").className = 'hidden';
-      console.log('True')
   }
 }
 
