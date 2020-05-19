@@ -1,6 +1,6 @@
-import os, sys
+import os
 import json
-from flask import request, redirect, session
+from flask import request, session
 from functools import wraps
 from jose import jwt
 from urllib.request import urlopen
@@ -9,7 +9,7 @@ AUTH0_DOMAIN = os.environ.get('AUTH0_DOMAIN')
 ALGORITHMS = os.environ.get('ALGORITHMS')
 API_AUDIENCE = os.environ.get('API_AUDIENCE')
 
-''' 
+'''
 AuthError Exception
 A standardized way to communicate auth failure modes
 '''
@@ -120,16 +120,6 @@ def verify_decode_jwt(token):
     }, 400)
 
 
-# def requires_auth0(f):
-#     @wraps(f)
-#     def decorated(*args, **kwargs):
-#         if 'profile' not in session:
-#             print('profile not in session')
-#             return redirect('/')
-#         return f(*args, **kwargs)
-#
-#     return decorated
-
 def requires_auth(permission=''):
     def requires_auth_decorator(f):
         @wraps(f)
@@ -153,5 +143,3 @@ def has_permission(token, permission):
         return True
 
     return False
-
-

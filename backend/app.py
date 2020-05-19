@@ -67,46 +67,27 @@ def create_app():
         resp = auth0.get('userinfo')
         userinfo = resp.json()
 
+        # set session variables
         session['return_html'] = True
         session['jwt_token'] = token
-
-        if has_permission(token, 'delete:task'):
-            session['delete_task_permitted'] = 'yes'
-        else:
-            session['delete_task_permitted'] = 'no'
-
-        if has_permission(token, 'delete:volunteer'):
-            session['delete_vol_permitted'] = 'yes'
-        else:
-            session['delete_vol_permitted'] = 'no'
-
-        if has_permission(token, 'post:task'):
-            session['add_task_permitted'] = 'yes'
-        else:
-            session['add_task_permitted'] = 'no'
-
-        if has_permission(token, 'post:volunteer'):
-            session['add_vol_permitted'] = 'yes'
-        else:
-            session['add_vol_permitted'] = 'no'
-
+        session['delete_task_permitted'] = str(has_permission(token,
+                                                              'delete:task'))
+        session['delete_vol_permitted'] = str(has_permission(token, 'delete:vo'
+                                                                    'lunteer'))
+        session['add_task_permitted'] = str(has_permission(token, 'post:task'))
+        session['add_vol_permitted'] = str(has_permission(token,
+                                                          'post:volunteer'))
         session['user'] = {
             'user_id': userinfo['sub'],
             'email': userinfo['email'],
             'first_name': userinfo['nickname'].title(),
         }
+
         return redirect('/dashboard')
 
     @app.route('/dashboard')
     # @requires_auth('get:volunteer')
     def dashboard():
-        print('Has post:task permission',
-              has_permission(session['jwt_token'], 'post:task'))
-        print('session[add_task_permitted] =', session['add_task_permitted'])
-        print('Has post:volunteer permission',
-              has_permission(session['jwt_token'], 'post:volunteer'))
-        print('session[add_vol_permitted] =', session['add_vol_permitted'])
-
         # if user is not logged in, they are not authorized for this route
         # so send them to the / route
         if session.get('jwt_token', False):
@@ -129,7 +110,7 @@ def create_app():
             return render_template('task_list.html',
                                    tasks=formatted_tasks,
                                    permit_add=session.get('add_task_permitted',
-                                                          'no'))
+                                                          'False'))
         else:
             return {
                 'success': True,
@@ -145,7 +126,7 @@ def create_app():
         return render_template('task_list.html',
                                tasks=formatted_tasks,
                                permit_add=session.get('add_task_permitted',
-                                                      'no'))
+                                                      'False'))
 
     @app.route('/tasks/<int:task_id>')
     def get_task(task_id):
@@ -158,11 +139,11 @@ def create_app():
             return render_template('show_task.html',
                                    task=task.format(),
                                    permit_delete=session.get
-                                   ('delete_task_permitted', 'no'))
+                                   ('delete_task_permitted', 'False'))
         else:
             return {
                 'success': True,
-                'tasks': task.format()
+                'task': task.format()
             }
 
     @app.route('/tasks/search', methods=['POST'])
@@ -178,7 +159,7 @@ def create_app():
         return render_template('task_list.html',
                                tasks=[task.format() for task in tasks],
                                permit_add=session.get('add_task_permitted',
-                                                      'no'))
+                                                      'False'))
 
     def get_volunteer_choices():
         # returns a list of tuples of all volunteer ids and names that is used
@@ -290,7 +271,7 @@ def create_app():
         # deletes the task having id = task_id and returns the task id
         task = Task.query.get(task_id)
         if not task:
-            flash('Task ' + task.title + ' was not found')
+            flash('Task ' + str(task_id) + ' was not found')
             abort(404)
 
         try:
@@ -388,8 +369,8 @@ def create_app():
         if session.get('return_html', False):
             return render_template('volunteer_list.html',
                                    volunteers=[v.format() for v in volunteers],
-                                   permit_add=session.get('add_task_permitted',
-                                                          'no'))
+                                   permit_add=session.get('add_vol_permitted',
+                                                          'False'))
         else:
             return {'success': True,
                     'volunteers': [vol.format() for vol in volunteers]
@@ -407,7 +388,7 @@ def create_app():
             return render_template('show_volunteer.html',
                                    volunteer=volunteer.format(),
                                    permit_delete=session
-                                   .get('delete_vol_permitted', 'no'))
+                                   .get('delete_vol_permitted', 'False'))
         else:
             return {
                 'success': True,
@@ -428,8 +409,8 @@ def create_app():
 
         return render_template('volunteer_list.html',
                                volunteers=[vol.format() for vol in volunteers],
-                               permit_add=session.get('add_task_permitted',
-                                                      'no'))
+                               permit_add=session.get('add_vol_permitted',
+                                                      'False'))
 
     @app.route('/volunteers/update/<int:vol_id>', methods=['GET'])
     @requires_auth('patch:volunteer')

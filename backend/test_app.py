@@ -17,7 +17,6 @@ class CapstoneTestCase(unittest.TestCase):
     # Volunteer table must not contain a row with id = 99999. This will be
     # used to test for Not Found
 
-
     def setUp(self):
         """ initialize the app """
         self.app = create_app()
@@ -38,13 +37,13 @@ class CapstoneTestCase(unittest.TestCase):
             'Content-Type': 'application/json'
         }
 
-        # Set the following variable to an id that exists in the task table before
-        # running.  It will be used to test delete_task
-        self.delete_task_id = 51
+        # Set the following variable to an id that exists in the Task table
+        # before running.  It will be used to test delete_task
+        self.delete_task_id = 77
 
-        # Set the following variable to an id that exists in the Volunteer table
-        # before running.  It will be used to test delete_volunteer
-        self.delete_volunteer_id = 33
+        # Set the following variable to an id that exists in the Volunteer
+        # table before running.  It will be used to test delete_volunteer
+        self.delete_volunteer_id = 94
 
     # Task Tests ############################################################
 
@@ -131,7 +130,7 @@ class CapstoneTestCase(unittest.TestCase):
     def test_delete_task_not_found(self):
         task_id = 99999
         res = self.client().delete('/tasks/' + str(task_id),
-                                  headers=self.director_header)
+                                   headers=self.director_header)
         data = json.loads(res.data)
         self.assertEqual(res.status_code, 404)
         self.assertEqual(data['success'], False)
@@ -158,7 +157,7 @@ class CapstoneTestCase(unittest.TestCase):
                                     'details': 'Publix address: 123 Main St,'
                                                ' OurTown',
                                     'date_needed': date_needed
-        })
+                                 })
         data = json.loads(res.data)
         self.assertEqual(res.status_code, 200)
         self.assertEqual(data['success'], True)
@@ -180,14 +179,14 @@ class CapstoneTestCase(unittest.TestCase):
                                     'title': 'Pick up donations from Kroger',
                                     'details': "Kroger's address: 456 Main St"
                                                ", OurTown, contact Jim"
-        })
+                                 })
         data = json.loads(res.data)
         self.assertEqual(res.status_code, 400)
         self.assertEqual(data['success'], False)
         self.assertEqual(data['error'], 400)
         self.assertEqual(data['message'], 'Bad Request')
 
-    # Volunteer Tests ############################################################
+    # Volunteer Tests #########################################################
 
     # GET volunteers/ -- get_volunteers()
     def test_get_all_volunteers(self):
@@ -356,7 +355,7 @@ class CapstoneTestCase(unittest.TestCase):
                                     'details': 'Publix address: 123 Main St,'
                                                ' OurTown',
                                     'date_needed': '2020-05-31'
-        })
+                                 })
         data = json.loads(res.data)
         self.assertEqual(res.status_code, 401)
         self.assertEqual(data['success'], False)
