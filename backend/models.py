@@ -102,7 +102,8 @@ class Volunteer(db.Model):
         self.phone_number = phone_number
 
     def format(self):
-        task_list = Task.query.filter_by(volunteer_id=self.id).order_by(Task.id).all()
+        task_list = Task.query.filter_by(volunteer_id=self.id).order_by\
+            (Task.id).all()
         return {
             'id': self.id,
             'name': self.name,

@@ -9,8 +9,6 @@
     </form>
     <div class="hidden" id="permit-delete">{{ permit_delete }}</div>
     <button class="btn btn-sm btn-info" id="delete-button" type="submit" onclick="deleteButtonClicked({{ volunteer.id }})">Delete Volunteer</button>
-
-
   </div>
 
   <div class="container col-6" style="color: darkcyan">
@@ -56,7 +54,6 @@
   }
 
   function setHidden() {
-  console.log('setHidden', document.getElementById("permit-delete").innerText);
   if (document.getElementById("permit-delete").innerText !== 'True') {
       document.getElementById("delete-button").className = 'hidden';
   }

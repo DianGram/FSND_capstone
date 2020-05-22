@@ -3,7 +3,9 @@
 ## Udacity Full Stack NanoDegree Capstone Project
 
 ### Overview
-For my Capstone project, I am implementing an app for a non-profit called Feed the Kids.  
+For my Capstone project, I am implementing a simplified app for a non-profit called Feed the Kids.  
+It is to be used by the public to view opportunities to volunteer and by employees of the company to
+manage tasks and volunteers.
 There are two tables: Tasks and Volunteers, and two roles:  Assistant and Director. Auth0 is used to authenticate users.
 * The Assistant Role:
     *  Can view, create, and update Volunteers
@@ -14,8 +16,7 @@ There are two tables: Tasks and Volunteers, and two roles:  Assistant and Direct
     * Can view, create, update and delete Tasks
 
 * The public:
-    * Can sign up, view, update and delete their own profile
-    * Can view tasks
+    * Can view open tasks
 
 ## About the Tech Stack
 The tech stack will include:
@@ -25,7 +26,7 @@ The tech stack will include:
 * **Python3** 
 * **Flask** 
 * **Flask-Migrate** 
-* **HTML**, **CSS**, and **Javascript** with [Bootstrap 3](https://getbootstrap.com/docs/3.4/customize/) for our website's frontend
+* **HTML**, **CSS**, and **Javascript** with [Bootstrap 4](https://getbootstrap.com/docs/4.5/getting-started/introduction/) for our website's frontend
 
 ### Backend
 [View the ./backend README.md for more details.](./backend/README.md)

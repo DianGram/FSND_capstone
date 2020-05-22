@@ -1,0 +1,206 @@
+--
+-- PostgreSQL database dump
+--
+
+-- Dumped from database version 12.2
+-- Dumped by pg_dump version 12.2
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
+
+SET default_tablespace = '';
+
+SET default_table_access_method = heap;
+
+--
+-- Name: alembic_version; Type: TABLE; Schema: public; Owner: leegramling
+--
+
+CREATE TABLE public.alembic_version (
+    version_num character varying(32) NOT NULL
+);
+
+
+ALTER TABLE public.alembic_version OWNER TO leegramling;
+
+--
+-- Name: task; Type: TABLE; Schema: public; Owner: leegramling
+--
+
+CREATE TABLE public.task (
+    id integer NOT NULL,
+    title character varying NOT NULL,
+    details character varying NOT NULL,
+    date_needed date NOT NULL,
+    status character varying NOT NULL,
+    volunteer_id integer
+);
+
+
+ALTER TABLE public.task OWNER TO leegramling;
+
+--
+-- Name: task_id_seq; Type: SEQUENCE; Schema: public; Owner: leegramling
+--
+
+CREATE SEQUENCE public.task_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.task_id_seq OWNER TO leegramling;
+
+--
+-- Name: task_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: leegramling
+--
+
+ALTER SEQUENCE public.task_id_seq OWNED BY public.task.id;
+
+
+--
+-- Name: volunteer; Type: TABLE; Schema: public; Owner: leegramling
+--
+
+CREATE TABLE public.volunteer (
+    id integer NOT NULL,
+    name character varying NOT NULL,
+    address character varying NOT NULL,
+    city character varying NOT NULL,
+    state character varying(2) NOT NULL,
+    zip_code character varying(10) NOT NULL,
+    phone_number character varying(12) NOT NULL
+);
+
+
+ALTER TABLE public.volunteer OWNER TO leegramling;
+
+--
+-- Name: volunteer_id_seq; Type: SEQUENCE; Schema: public; Owner: leegramling
+--
+
+CREATE SEQUENCE public.volunteer_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.volunteer_id_seq OWNER TO leegramling;
+
+--
+-- Name: volunteer_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: leegramling
+--
+
+ALTER SEQUENCE public.volunteer_id_seq OWNED BY public.volunteer.id;
+
+
+--
+-- Name: task id; Type: DEFAULT; Schema: public; Owner: leegramling
+--
+
+ALTER TABLE ONLY public.task ALTER COLUMN id SET DEFAULT nextval('public.task_id_seq'::regclass);
+
+
+--
+-- Name: volunteer id; Type: DEFAULT; Schema: public; Owner: leegramling
+--
+
+ALTER TABLE ONLY public.volunteer ALTER COLUMN id SET DEFAULT nextval('public.volunteer_id_seq'::regclass);
+
+
+--
+-- Data for Name: alembic_version; Type: TABLE DATA; Schema: public; Owner: leegramling
+--
+
+COPY public.alembic_version (version_num) FROM stdin;
+38cb09534931
+\.
+
+
+--
+-- Data for Name: task; Type: TABLE DATA; Schema: public; Owner: leegramling
+--
+
+COPY public.task (id, title, details, date_needed, status, volunteer_id) FROM stdin;
+1	Pick up donations - Publix	Publix address: 123 Main St, OurTown	2020-04-27	Open	1
+78	Pick up donations - Publix	Publix address: 123 Main St, OurTown	2020-05-27	Open	\N
+2	Make sandwiches	Make 3 dozen turkey and swiss sandwiches	2020-06-01	Open	\N
+\.
+
+
+--
+-- Data for Name: volunteer; Type: TABLE DATA; Schema: public; Owner: leegramling
+--
+
+COPY public.volunteer (id, name, address, city, state, zip_code, phone_number) FROM stdin;
+2	Lisa Kudrow	123 5th Ave	New York	NY	12312	212-555-5555
+101	Karen Jones	5555 Broadway	New York	NY	12345	123-456-7890
+1	Jennifer Anniston	111 Greene St.	New York	NY	9999-1234	222-222-2222
+3	Courtney Cox	111 Geller St	New York	NY	12321	212-212-1212
+\.
+
+
+--
+-- Name: task_id_seq; Type: SEQUENCE SET; Schema: public; Owner: leegramling
+--
+
+SELECT pg_catalog.setval('public.task_id_seq', 78, true);
+
+
+--
+-- Name: volunteer_id_seq; Type: SEQUENCE SET; Schema: public; Owner: leegramling
+--
+
+SELECT pg_catalog.setval('public.volunteer_id_seq', 101, true);
+
+
+--
+-- Name: alembic_version alembic_version_pkc; Type: CONSTRAINT; Schema: public; Owner: leegramling
+--
+
+ALTER TABLE ONLY public.alembic_version
+    ADD CONSTRAINT alembic_version_pkc PRIMARY KEY (version_num);
+
+
+--
+-- Name: task task_pkey; Type: CONSTRAINT; Schema: public; Owner: leegramling
+--
+
+ALTER TABLE ONLY public.task
+    ADD CONSTRAINT task_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: volunteer volunteer_pkey; Type: CONSTRAINT; Schema: public; Owner: leegramling
+--
+
+ALTER TABLE ONLY public.volunteer
+    ADD CONSTRAINT volunteer_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: task task_volunteer_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: leegramling
+--
+
+ALTER TABLE ONLY public.task
+    ADD CONSTRAINT task_volunteer_id_fkey FOREIGN KEY (volunteer_id) REFERENCES public.volunteer(id);
+
+
+--
+-- PostgreSQL database dump complete
+--
+

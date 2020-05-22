@@ -4,12 +4,14 @@
 <div class="row">
   <div class="container col-4" align="right">
     <br><br><br>
-    <form method="get">
-      <button class="btn btn-sm btn-info" type="submit" formaction="/tasks/update/{{ task.id }}">Update Task</button><br><br>
-    </form>
+    <div class="hidden" id="permit-update">{{ permit_update }}</div>
     <div class="hidden" id="permit-delete">{{ permit_delete }}</div>
-    <button class="btn btn-sm btn-info" id="delete-button" type="submit" onclick="deleteButtonClicked({{ task.id }})">Delete Task</button>
+    <div class="hidden" id="permit-view-vol">{{ permit_view_vol }}</div>
 
+    <form method="get">
+      <button class="btn btn-sm btn-info" id="update-button" type="submit" formaction="/tasks/update/{{ task.id }}">Update Task</button><br><br>
+    </form>
+    <button class="btn btn-sm btn-info" id="delete-button" type="submit" onclick="deleteButtonClicked({{ task.id }})">Delete Task</button>
   </div>
 
   <div class="container col-4" style="color: darkcyan">
@@ -17,10 +19,11 @@
     <br>
     Status: {{ task.status }}<br>
     Date Needed: {{ task.date_needed }}<br>
-    {% if task.volunteer_name %}
-      Assigned to: <a href="/volunteers/{{ task.volunteer_id }}" style="color: #074064">
-        {{ task.volunteer_name }}</a><br><br>
+    {% if (task.volunteer_name) and (permit_view_vol == 'True') %}
+      Assigned to: <a href="/volunteers/{{ task.volunteer_id }}" style="color: #074064">{{ task.volunteer_name }}</a>
+      <br>
     {% endif %}
+    <br>
     Details:<br>
     {{ task.details }}
   </div>
@@ -54,6 +57,9 @@ function deleteButtonClicked(task_id) {
 function setHidden() {
   if (document.getElementById("permit-delete").innerText !== 'True') {
       document.getElementById("delete-button").className = 'hidden';
+  }
+  if (document.getElementById("permit-update").innerText !== 'True') {
+      document.getElementById("update-button").className = 'hidden';
   }
 }
 

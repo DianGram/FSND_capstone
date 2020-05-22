@@ -12,20 +12,24 @@
 
   <div class="container col-5" style="color: darkcyan">
   <h3 align="center">Tasks</h3><br>
-  <ul class="tasks">
-    {% for task in tasks %}
-    <li>
-      <a href="/tasks/{{ task.id }}" style="color: darkcyan"><h5>{{ task.title }}</h5></a>
-      Status: {{ task.status }}<br>
-      Date Needed: {{ task.date_needed }}<br>
-      {% if task.volunteer_name %}
-      Assigned to: {{ task.volunteer_name }}<br><br>
-      {% endif %}
-      {{ task.details }}
-      <br><br>
-    </li>
-    {%  endfor %}
-  </ul>
+  {% if tasks %}
+    <ul class="tasks">
+      {% for task in tasks %}
+      <li>
+        <a href="/tasks/{{ task.id }}" style="color: darkcyan"><h5>{{ task.title }}</h5></a>
+        Status: {{ task.status }}<br>
+        Date Needed: {{ task.date_needed }}<br>
+        {% if task.volunteer_name %}
+          Assigned to: {{ task.volunteer_name }}<br><br>
+        {% endif %}
+        {{ task.details }}
+        <br><br>
+      </li>
+      {%  endfor %}
+    </ul>
+  {% else %}
+      There are currently no Open Tasks, please try again later
+  {% endif %}
   </div>
 
   <div class="container col-2" style="color: darkcyan"></div>
@@ -33,7 +37,6 @@
 
 <script type="text/javascript">
   function setHidden() {
-      console.log('setHidden', document.getElementById('permit_add').innerText);
     if (document.getElementById("permit_add").innerText !== 'True') {
         document.getElementById("add_button").className = 'hidden';
     }

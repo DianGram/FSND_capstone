@@ -18,8 +18,9 @@ Set up a Virtual Environment for this project
 $ python3 -m venv udacity_env   
 $ source udacity_env/bin/activate
 ```
-The file setup.sh will automatically activate a venv named udacity_env.  If you choose to name your venv differently, you will need to change the name in the setup.sh file.
-
+A virtual environment named udacity_env will automatically activate when running
+setup.sh.  If you choose to name your venv differently, you will need to change the 
+name in the setup.sh file to your chosen name.
 
 #### PIP Install Dependencies
 Once you have your virtual environment set up and running, install dependencies by navigating to the /backend directory and running:
@@ -34,11 +35,11 @@ This will install all of the required packages listed in the requirements.txt fi
 
 - [SQLAlchemy](https://www.sqlalchemy.org/) is the Python SQL toolkit and ORM that will handle the postgreSQL database. 
 
-- [Flask-CORS](https://flask-cors.readthedocs.io/en/latest/#) is the extension that will handle cross origin requests from our frontend server. 
+- [python-jose](https://python-jose.readthedocs.io/en/latest/) is a JavaScript Object Signing and Encryption technology used to decode and validate jwt (JSON Web Tokens)
 
 
 ## Database Setup
-You'll need to create a Database before running the app:
+You'll need to create a database before running the app:
 ```bash
 $ createdb feed_the_kids
 ```
@@ -56,7 +57,8 @@ Run the following from within the backend directory:
 $ source setup.sh
 $ flask run
 ```
-This will activate the virtual environment, set the necessary environment variables and start the flask server.
+This will activate the virtual environment, set the necessary environment variables and start the flask server.  
+ In your browser, navigate to http://localhost:5000
 
 
 ## Testing

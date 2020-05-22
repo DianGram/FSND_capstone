@@ -4,15 +4,9 @@
 
 <br><br><br>
 <div class="container col-10">
-  <div class="row">
-    <h3>Welcome {{userinfo['first_name']}}</h3>
-    <div class="ml-auto">
-      <a href="/logout"><button class="btn btn-info my-2 my-sm-0">Logout</button></a>
-    </div>
-  </div>
-  Token <pre>{{userinfo_pretty}}</pre>
-
+  <h3>Welcome {{userinfo['first_name']}}</h3>
   <br><br>
+
   <div class="row">
     <div class="col-5">
       <form id="search-volunteer-form" action="volunteers/search" class="form-inline" method="post">
@@ -47,44 +41,28 @@
       <a class="btn btn-info btn-lg btn-block" href="/volunteers/add">New Volunteer</a>
     </div>
     <div class="col-5 ml-auto">
-      <a class="btn btn-info btn-lg btn-block" href="/tasks/add">New Task</a>
+      <div class="hidden" id="permit-add">{{ permit_add }}</div>
+      <a class="btn btn-info btn-lg btn-block" href="/tasks/add" id="add-task-btn">New Task</a>
     </div>
   </div>
 
 </div>
 
-<!-- <script>
-  document.getElementById('search-volunteer-form').onsubmit = function(e) {
-    e.preventDefault();
-    let searchterm = document.getElementById('volsearch').value;
-    console.log('search term:', searchterm);
-    fetch('/volunteers/search', {
-        method: 'POST',
-        body: JSON.stringify({
-            'search_term': document.getElementById('volsearch').value
-        }),
-        headers: {
-            'Content-Type': 'application/json'
-        }
-      })
-  };
+<script>
 
-  document.getElementById('search-task-form').onsubmit = function(e) {
-    e.preventDefault();
-    let searchterm = document.getElementById('tasksearch').value;
-    console.log('search term:', searchterm);
-    fetch('/tasks/search', {
-        method: 'POST',
-        body: JSON.stringify({
-            'search_term': document.getElementById('tasksearch').value
-        }),
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    })
+  function setHidden() {
+  if (document.getElementById("permit-add").innerText !== 'True') {
+      document.getElementById("add-task-btn").className = 'hidden';
   }
+}
+</script>
 
-</script> -->
+
+<style onload="setHidden()">
+  .hidden {
+    display: none;
+  }
+</style>
 
 
 {% endblock %}

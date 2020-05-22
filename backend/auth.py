@@ -57,7 +57,6 @@ def check_permissions(permission, payload):
         }, 401)
 
     if permission not in payload['permissions']:
-        print(' raising autherror 403 ')
         raise AuthError({
             'code': 'Forbidden',
             'description': 'You do not have permission to access this resource'
@@ -126,9 +125,7 @@ def requires_auth(permission=''):
         def wrapper(*args, **kwargs):
             token = session.get('jwt_token')
             if not token:
-                print('getting token from auth header')
                 token = get_token_auth_header()
-            print('token', token)
             payload = verify_decode_jwt(token)
             check_permissions(permission, payload)
             return f(*args, **kwargs)
