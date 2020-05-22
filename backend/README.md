@@ -73,6 +73,11 @@ Then, to run the unittest:
 $ python3 test_app.py
 ```
 
+If the reviewer wants to test the API by using curl, for your convenience there are
+environment variables set up with tokens that are valid for 24 hours from submission
+of the project.  The environment variables are ASSISTANT_TOKEN and DIRECTOR_TOKEN.
+The unittests use these same environment variables to test RBAC.
+
 
 # API Reference
 ## Getting Started
@@ -81,7 +86,7 @@ It can also be run locally at http://localhost:5000
 
 ## Endpoints
 Note: most endpoints require authentication.  
-All endpoints will return a success value
+All endpoints will return a success value.
 
 GET /tasks
 - Gets all tasks

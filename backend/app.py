@@ -245,8 +245,9 @@ def create_app():
         # since 0 is not an id in the volunteer database, it throws a
         # ForeignKeyViolation error.  The only way I found around this error
         # is to set a local variable that is not in the form to 'None' and then
-        # overlay the value after the form.populate_obj statement.  Changing
-        # volunteer-id.data to 'None' did not have any effect.
+        # overlay the form value with the local variable after the
+        # form.populate_obj statement.  Changing volunteer_id.data to 'None'
+        # did not have any effect.
         volunteer_id = form.volunteer_id.data
         if volunteer_id == 0:
             volunteer_id = None
