@@ -9,7 +9,6 @@ Feed the Kids uses Auth0 for authentication.  The Auth0 JWT includes permissions
 For the reviewer's convenience, there are logins already set up in Auth0 for each role:   
 Assistant role - email is assistant@ftk.com and password is Assistant1   
 Director role  - email is director@ftk.com and password is Director1   
-The tokens for each role are valid for 24 hours from submission of the project.
 
 ###  Authorization
 The Assistant role can add and update volunteers in the Volunteer table and they can update tasks in the Task table. 

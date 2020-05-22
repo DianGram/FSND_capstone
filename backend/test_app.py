@@ -39,11 +39,11 @@ class CapstoneTestCase(unittest.TestCase):
 
         # Set the following variable to an id that exists in the Task table
         # before running.  It will be used to test delete_task
-        self.delete_task_id = 77
+        self.delete_task_id = 78
 
         # Set the following variable to an id that exists in the Volunteer
         # table before running.  It will be used to test delete_volunteer
-        self.delete_volunteer_id = 94
+        self.delete_volunteer_id = 101
 
     # Task Tests ############################################################
 
@@ -76,8 +76,8 @@ class CapstoneTestCase(unittest.TestCase):
 
     # PATCH tasks/<int:task_id> -- update_task
     def test_update_task_success(self):
-        task_id = 1
-        vol_id = 1
+        task_id = 2
+        vol_id = 2
         vol_name = Volunteer.query.get(vol_id).name
 
         res = self.client().patch('/tasks/' + str(task_id),
@@ -221,7 +221,7 @@ class CapstoneTestCase(unittest.TestCase):
     # PATCH volunteers/<int: vol_id> -- update_volunteer(vol_id)
     def test_update_volunteer_success(self):
         volunteer_id = '1'
-        new_zip_code = '9999-1234'
+        new_zip_code = '12345-1234'
 
         res = self.client().patch('/volunteers/' + volunteer_id,
                                   headers=self.director_header,

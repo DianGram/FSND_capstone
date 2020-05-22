@@ -41,7 +41,7 @@ This will install all of the required packages listed in the requirements.txt fi
 ## Database Setup
 You'll need to create a database before running the app:
 ```bash
-$ createdb feed_the_kids
+$ createdb capstone
 ```
 Now run the following to create the tables for the database:
 ```bash
@@ -68,9 +68,9 @@ $ dropdb ftk_test
 $ createdb ftk_test
 $ psql ftk_test < ftk_test.psql
 ```
-Then, to run the unittest:
+Once the test database is set up, you can run the unittests:
 ```bash
-$ python3 test_app.py
+$ source run_unittests.sh
 ```
 
 If the reviewer wants to test the API by using curl, for your convenience there are
